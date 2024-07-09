@@ -15,6 +15,7 @@ class SquaredButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: onPressed,
       elevation: 0,
+      hoverElevation: 0,
       child: icon,
     );
   }

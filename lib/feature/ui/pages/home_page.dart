@@ -1,5 +1,5 @@
 import 'package:automatize_app/feature/ui/components/body.dart';
-import 'package:automatize_app/feature/ui/components/side_menu.dart';
+import 'package:automatize_app/feature/ui/components/menu/side_menu.dart';
 
 import '../../../common_libs.dart';
 
