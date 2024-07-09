@@ -1,6 +1,7 @@
 import 'package:automatize_app/common_libs.dart';
+import 'package:automatize_app/feature/ui/components/automatize_header.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu_item.dart';
-import 'package:automatize_app/feature/ui/components/squared_button.dart';
+import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 

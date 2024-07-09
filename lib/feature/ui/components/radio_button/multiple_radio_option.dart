@@ -1,0 +1,49 @@
+import 'package:automatize_app/common_libs.dart';
+import 'package:automatize_app/core/utils/extensions/iterable_extension.dart';
+import 'package:automatize_app/feature/ui/components/radio_button/radio_item.dart';
+
+class MultipleRadioOption extends StatefulWidget {
+  final List<RadioItem> items;
+  final Function(int value) onChanged;
+
+  const MultipleRadioOption({
+    super.key,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  State<MultipleRadioOption> createState() => _MultipleRadioOptionState();
+}
+
+class _MultipleRadioOptionState extends State<MultipleRadioOption> {
+  int _chosenRadio = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(splashFactory: NoSplash.splashFactory),
+      child: Row(
+          children: widget.items.mapIndexed((index, item) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          child: RadioMenuButton<int>(
+            value: index,
+            groupValue: _chosenRadio,
+            onFocusChange: (_) => FocusScope.of(context).unfocus(),
+            onChanged: onTap,
+            child: Text(
+              item.label,
+              style: TextStyle(color: context.colorScheme.primary),
+            ),
+          ),
+        );
+      }).toList()),
+    );
+  }
+
+  void onTap(int? value) {
+    setState(() => _chosenRadio = value!);
+    widget.onChanged(_chosenRadio);
+  }
+}

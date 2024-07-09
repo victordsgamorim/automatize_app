@@ -1,3 +1,4 @@
+import "package:automatize_app/common_libs.dart";
 import "package:flutter/material.dart";
 
 class MaterialTheme {
@@ -335,22 +336,37 @@ class MaterialTheme {
     return theme(darkHighContrastScheme());
   }
 
-
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
-     useMaterial3: true,
-     brightness: colorScheme.brightness,
-     colorScheme: colorScheme,
-     textTheme: textTheme.apply(
-       bodyColor: colorScheme.onSurface,
-       displayColor: colorScheme.onSurface,
-     ),
-     scaffoldBackgroundColor: colorScheme.background,
-     canvasColor: colorScheme.surface,
-  );
+        useMaterial3: true,
+        brightness: colorScheme.brightness,
+        colorScheme: colorScheme,
+        textTheme: textTheme.apply(
+          bodyColor: colorScheme.onSurface,
+          displayColor: colorScheme.onSurface,
+        ),
+        scaffoldBackgroundColor: colorScheme.surface,
+        canvasColor: colorScheme.surface,
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: colorScheme.onPrimary,
+          prefixIconColor: colorScheme.outline,
+          labelStyle:
+              textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+          textStyle: WidgetStateProperty.all(
+              textTheme.bodyMedium?.copyWith(fontSize: 16)),
+        )),
+        radioTheme: RadioThemeData(
+          fillColor: WidgetStateProperty.all(colorScheme.primary),
+        ),
+      );
 
-
-  List<ExtendedColor> get extendedColors => [
-  ];
+  List<ExtendedColor> get extendedColors => [];
 }
 
 class ExtendedColor {

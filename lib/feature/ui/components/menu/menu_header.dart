@@ -46,18 +46,12 @@ class _MenuHeaderState extends State<_MenuHeader> {
             bottom: 0,
             child: FadeTransition(
               opacity: _fadeTransition,
-              child: Text(
-                "Menu",
-                style: context.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: context.colorScheme.primary,
-                ),
-              ),
+              child: const AutomatizeHeader(label: "Menu"),
             ),
           ),
           AlignTransition(
             alignment: _alignTransition,
-            child: SquaredButton(
+            child: AutomatizeButton.square(
               icon: RotationTransition(
                 turns: _rotateTransition,
                 child: const Icon(Icons.arrow_back_rounded),
