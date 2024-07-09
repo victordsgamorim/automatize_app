@@ -82,9 +82,12 @@ class _SliverMenuHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(context, shrinkOffset, overlapsContent) {
-    return _MenuHeader(
-      controller: controller,
-      onPressed: onPressed,
+    return Container(
+      color: context.colorScheme.onPrimary,
+      child: _MenuHeader(
+        controller: controller,
+        onPressed: onPressed,
+      ),
     );
   }
 

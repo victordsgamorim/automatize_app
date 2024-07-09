@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.6
 
   equatable: ^2.0.5
+  sliver_fill_remaining_box_adapter: ^1.0.0
+  sliver_tools: ^0.2.12
 
 dev_dependencies:
   flutter_test:
