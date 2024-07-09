@@ -1,8 +1,6 @@
 import 'package:automatize_app/common_libs.dart';
-import 'package:automatize_app/core/utils/extensions/build_context_extension.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu_item.dart';
 import 'package:automatize_app/feature/ui/components/squared_button.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -16,7 +14,12 @@ const _animationDuration = Duration(milliseconds: 300);
 const _animationCurve = Curves.linear;
 
 class SideMenu extends StatefulWidget {
-  const SideMenu({super.key});
+  final List<MenuItem> menus;
+
+  const SideMenu({
+    super.key,
+    required this.menus,
+  });
 
   @override
   State<SideMenu> createState() => _SideMenuState();
@@ -73,17 +76,7 @@ class _SideMenuState extends State<SideMenu>
                   ),
                   _SliverMenu(
                     controller: _animationController,
-                    menus: const [
-                      MenuItem(title: "Início", icon: FontAwesomeIcons.house),
-                      MenuItem(title: "Clientes", icon: FontAwesomeIcons.users),
-                      MenuItem(
-                          title: "Produtos",
-                          icon: FontAwesomeIcons.boxesStacked),
-                      MenuItem(
-                          title: "Criar OS", icon: FontAwesomeIcons.circlePlus),
-                      MenuItem(
-                          title: "Configurações", icon: FontAwesomeIcons.gear),
-                    ],
+                    menus: widget.menus,
                   ),
                 ],
               ),

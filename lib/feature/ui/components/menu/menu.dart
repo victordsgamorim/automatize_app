@@ -41,6 +41,7 @@ class _SliverMenuState extends State<_SliverMenu> {
                   title: menu.title,
                   icon: menu.icon,
                   onPressed: () {
+                    menu.onTap();
                     setState(() {
                       _currentIndex = index;
                     });
@@ -65,6 +66,7 @@ class _SliverMenuState extends State<_SliverMenu> {
                     title: menu.title,
                     icon: menu.icon,
                     onPressed: () {
+                      menu.onTap();
                       setState(() {
                         _currentIndex = endSublist + index;
                       });
