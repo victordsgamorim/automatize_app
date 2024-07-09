@@ -49,7 +49,7 @@ class _MenuHeaderState extends State<_MenuHeader> {
               child: Text(
                 "Menu",
                 style: context.textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w800,
                   color: context.colorScheme.primary,
                 ),
               ),

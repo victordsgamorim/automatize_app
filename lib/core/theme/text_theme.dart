@@ -1,23 +1,50 @@
 import 'package:automatize_app/core/utils/extensions/build_context_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 const bodyFontString = "Lexend";
 const displayFontString = "Lexend";
 
 TextTheme createTextTheme(BuildContext context) {
   TextTheme baseTextTheme = context.textTheme;
-  TextTheme bodyTextTheme =
-      GoogleFonts.getTextTheme(bodyFontString, baseTextTheme);
-  TextTheme displayTextTheme =
-      GoogleFonts.getTextTheme(displayFontString, baseTextTheme);
-  TextTheme textTheme = displayTextTheme.copyWith(
-    bodyLarge: bodyTextTheme.bodyLarge,
-    bodyMedium: bodyTextTheme.bodyMedium,
-    bodySmall: bodyTextTheme.bodySmall,
-    labelLarge: bodyTextTheme.labelLarge,
-    labelMedium: bodyTextTheme.labelMedium,
-    labelSmall: bodyTextTheme.labelSmall,
+
+  TextStyle? bodyLarge = baseTextTheme.bodyLarge?.copyWith(
+    fontFamily: bodyFontString,
+    fontSize: 16.0,
   );
+
+  TextStyle? bodyMedium = baseTextTheme.bodyMedium?.copyWith(
+    fontFamily: bodyFontString,
+    fontSize: 14.0,
+  );
+
+  TextStyle? bodySmall = baseTextTheme.bodySmall?.copyWith(
+    fontFamily: bodyFontString,
+    fontSize: 12.0,
+  );
+
+  TextStyle? labelLarge = baseTextTheme.labelLarge?.copyWith(
+    fontFamily: bodyFontString,
+    fontSize: 14.0,
+  );
+
+  TextStyle? labelMedium = baseTextTheme.labelMedium?.copyWith(
+    fontFamily: bodyFontString,
+    fontSize: 12.0,
+  );
+
+  TextStyle? labelSmall = baseTextTheme.labelSmall?.copyWith(
+    fontFamily: bodyFontString,
+    fontSize: 10.0,
+  );
+
+  TextTheme textTheme = baseTextTheme.copyWith(
+    bodyLarge: bodyLarge,
+    bodyMedium: bodyMedium,
+    bodySmall: bodySmall,
+    labelLarge: labelLarge,
+    labelMedium: labelMedium,
+    labelSmall: labelSmall,
+  );
+
   return textTheme;
 }
