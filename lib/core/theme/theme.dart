@@ -1,4 +1,5 @@
 import "package:automatize_app/common_libs.dart";
+import "package:automatize_app/gen/fonts.gen.dart";
 import "package:flutter/material.dart";
 
 class MaterialTheme {
@@ -339,6 +340,7 @@ class MaterialTheme {
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
         useMaterial3: true,
         brightness: colorScheme.brightness,
+        fontFamily: FontFamily.lexend,
         colorScheme: colorScheme,
         textTheme: textTheme.apply(
           bodyColor: colorScheme.onSurface,

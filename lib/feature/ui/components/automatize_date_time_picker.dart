@@ -76,7 +76,6 @@ class _AutomatizeDateTimePickerState extends State<AutomatizeDateTimePicker> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          currentButton,
           if (_isResetIconVisible)
             TextButton(
               onPressed: () {
@@ -87,7 +86,8 @@ class _AutomatizeDateTimePickerState extends State<AutomatizeDateTimePicker> {
                 FontAwesomeIcons.filterCircleXmark,
                 size: 18,
               ),
-            )
+            ),
+          currentButton,
         ],
       ),
     );

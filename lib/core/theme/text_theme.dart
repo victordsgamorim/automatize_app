@@ -1,8 +1,11 @@
+import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/core/utils/extensions/build_context_extension.dart';
+import 'package:automatize_app/gen/assets.gen.dart';
+import 'package:automatize_app/gen/fonts.gen.dart';
 import 'package:flutter/material.dart';
 
-const bodyFontString = "Lexend";
-const displayFontString = "Lexend";
+const bodyFontString = FontFamily.lexend;
+const displayFontString = FontFamily.lexend;
 
 TextTheme createTextTheme(BuildContext context) {
   TextTheme baseTextTheme = context.textTheme;

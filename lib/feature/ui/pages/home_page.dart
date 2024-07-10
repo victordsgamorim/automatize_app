@@ -1,14 +1,11 @@
 import 'package:automatize_app/common_libs.dart';
-import 'package:automatize_app/core/utils/extensions/datetime_extension.dart';
 import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:automatize_app/feature/ui/components/automatize_date_time_picker.dart';
 import 'package:automatize_app/feature/ui/components/automatize_header.dart';
-import 'package:automatize_app/feature/ui/components/automatize_text_button.dart';
 import 'package:automatize_app/feature/ui/components/automatize_textfield.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/multiple_radio_option.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/radio_item.dart';
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:go_router/go_router.dart';
+import 'package:automatize_app/feature/ui/components/table/paginated_table.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,8 +17,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final TextEditingController _searchController;
   late final FocusNode _searchNode;
-
-  DateTime _currentDate = DateTime.now();
 
   @override
   void initState() {
@@ -62,18 +57,22 @@ class _HomePageState extends State<HomePage> {
             ],
             onChanged: (int value) {},
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              const AutomatizeHeader(label: "Ordem de Serviço"),
-              AutomatizeDateTimePicker(
-                parentSize: constraints.biggest,
-                onCancelPressed: () {},
-                onOKPressed: (range) {},
-              )
-            ],
-          )
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const AutomatizeHeader(label: "Ordem de serviço"),
+                AutomatizeDateTimePicker(
+                  parentSize: constraints.biggest,
+                  onCancelPressed: () {},
+                  onOKPressed: (range) {},
+                )
+              ],
+            ),
+          ),
+          const Expanded(child: PaginatedTable())
         ],
       );
     });

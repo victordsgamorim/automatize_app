@@ -61,7 +61,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
               child: Center(
                   child: Padding(
                 padding:
-                    const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
+                    const EdgeInsets.all(16.0),
                 child: widget.child,
               )),
             )
