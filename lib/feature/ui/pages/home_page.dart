@@ -1,13 +1,14 @@
 import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/core/utils/extensions/datetime_extension.dart';
-import 'package:automatize_app/core/utils/extensions/string_extension.dart';
+import 'package:automatize_app/feature/ui/components/automatize_button.dart';
+import 'package:automatize_app/feature/ui/components/automatize_date_time_picker.dart';
 import 'package:automatize_app/feature/ui/components/automatize_header.dart';
 import 'package:automatize_app/feature/ui/components/automatize_text_button.dart';
 import 'package:automatize_app/feature/ui/components/automatize_textfield.dart';
-import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/multiple_radio_option.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/radio_item.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,14 +18,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final TextEditingController _textEditingController;
-  late final FocusNode _focusNode;
+  late final TextEditingController _searchController;
+  late final FocusNode _searchNode;
+
+  DateTime _currentDate = DateTime.now();
 
   @override
   void initState() {
-
-    _textEditingController = TextEditingController();
-    _focusNode = FocusNode();
+    _searchController = TextEditingController();
+    _searchNode = FocusNode();
     super.initState();
   }
 
@@ -41,8 +43,8 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 width: (constraints.maxWidth / 2.3).clamp(300, 500),
                 child: AutomatizeTextField(
-                  controller: _textEditingController,
-                  focusNode: _focusNode,
+                  controller: _searchController,
+                  focusNode: _searchNode,
                   label: "Buscar ordem de serviço...",
                 ),
               ),
@@ -65,10 +67,10 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               const AutomatizeHeader(label: "Ordem de Serviço"),
-              AutomatizeTextButton(
-                label: DateTime.now().EEEEddMMMMyyyy,
-                icon: const Icon(Icons.calendar_month_outlined),
-                onTap: () {},
+              AutomatizeDateTimePicker(
+                parentSize: constraints.biggest,
+                onCancelPressed: () {},
+                onOKPressed: (range) {},
               )
             ],
           )
@@ -77,4 +79,10 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchNode.dispose();
+    super.dispose();
+  }
 }

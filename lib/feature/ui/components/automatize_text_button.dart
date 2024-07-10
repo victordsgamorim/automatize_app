@@ -14,12 +14,14 @@ class AutomatizeTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: TextButton.icon(
-        onPressed: () {},
-        label: Text(label),
-        icon: icon,
+    return TextButton(
+      onPressed: onTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label),
+          if (icon != null) ...[const SizedBox(width: 8), icon!],
+        ],
       ),
     );
   }
