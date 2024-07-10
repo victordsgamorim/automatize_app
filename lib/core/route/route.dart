@@ -18,15 +18,15 @@ final router = GoRouter(
         return NoTransitionPage(child: ScaffoldNavigationPage(child: child));
       },
       routes: [
-        FadeTranslationTransitionGoRouter(
+        NoTransitionGoRouter(
             parentNavigatorKey: _shellNavigatorKey,
             path: RoutePath.home,
             child: (context, state) => const HomePage()),
-        FadeTranslationTransitionGoRouter(
+        NoTransitionGoRouter(
             parentNavigatorKey: _shellNavigatorKey,
             path: RoutePath.clients,
             child: (context, state) => const ClientsPage()),
-        FadeTranslationTransitionGoRouter(
+        NoTransitionGoRouter(
             parentNavigatorKey: _shellNavigatorKey,
             path: RoutePath.products,
             child: (context, state) => const ProductsPage()),
@@ -66,4 +66,16 @@ class FadeTranslationTransitionGoRouter extends GoRoute {
                     );
                   },
                 ));
+}
+
+class NoTransitionGoRouter extends GoRoute {
+  NoTransitionGoRouter({
+    super.name,
+    required super.path,
+    required super.parentNavigatorKey,
+    required Widget Function(BuildContext context, GoRouterState state) child,
+    List<GoRoute> super.routes = const [],
+  }) : super(
+            pageBuilder: (context, state) =>
+                NoTransitionPage(child: child(context, state)));
 }
