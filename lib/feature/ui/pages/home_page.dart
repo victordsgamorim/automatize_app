@@ -6,6 +6,7 @@ import 'package:automatize_app/feature/ui/components/automatize_textfield.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/multiple_radio_option.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/radio_item.dart';
 import 'package:automatize_app/feature/ui/components/table/paginated_table.dart';
+import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,6 +28,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width > tablet;
+    final logoutItem = logoutMenu();
     return LayoutBuilder(builder: (context, constraints) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,18 +40,21 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: (constraints.maxWidth / 2.3).clamp(300, 500),
+                width: isTablet
+                    ? (constraints.maxWidth / 2.3).clamp(300, 500)
+                    : constraints.maxWidth,
                 child: AutomatizeTextField(
                   controller: _searchController,
                   focusNode: _searchNode,
                   label: "Buscar ordem de serviço...",
                 ),
               ),
-              AutomatizeButton.rectangle(
-                onPressed: () {},
-                icon: const Icon(Icons.logout_rounded),
-                label: const Text("Sair"),
-              )
+              if (isTablet)
+                AutomatizeButton.rectangle(
+                  onPressed: logoutItem.onTap,
+                  icon: Icon(logoutItem.icon),
+                  label: Text(logoutItem.title),
+                )
             ],
           ),
           MultipleRadioOption(

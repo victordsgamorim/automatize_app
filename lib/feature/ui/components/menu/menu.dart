@@ -1,16 +1,20 @@
-part of 'side_menu.dart';
+import 'package:automatize_app/common_libs.dart';
+import 'package:automatize_app/feature/ui/components/menu/menu_item.dart';
+import 'package:automatize_app/feature/ui/components/menu/menu_tile.dart';
+import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
-class _SliverMenu extends StatefulWidget {
+class SliverMenu extends StatefulWidget {
   final List<MenuItem> menus;
-  final AnimationController controller;
+  final AnimationController? controller;
 
-  const _SliverMenu({super.key, required this.controller, required this.menus});
+  const SliverMenu({super.key, this.controller, required this.menus});
 
   @override
-  State<_SliverMenu> createState() => _SliverMenuState();
+  State<SliverMenu> createState() => _SliverMenuState();
 }
 
-class _SliverMenuState extends State<_SliverMenu> {
+class _SliverMenuState extends State<SliverMenu> {
   int _currentIndex = 0;
 
   late List<MenuItem> _mainMenu;
@@ -35,7 +39,7 @@ class _SliverMenuState extends State<_SliverMenu> {
               final menu = _mainMenu[index];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
-                child: _MenuTile(
+                child: MenuTile(
                   isSelected: _currentIndex == index,
                   controller: widget.controller,
                   title: menu.title,
@@ -60,7 +64,7 @@ class _SliverMenuState extends State<_SliverMenu> {
                 itemCount: _bottomMenu.length,
                 itemBuilder: (context, index) {
                   final menu = _bottomMenu[index];
-                  return _MenuTile(
+                  return MenuTile(
                     isSelected: _currentIndex == endSublist + index,
                     controller: widget.controller,
                     title: menu.title,

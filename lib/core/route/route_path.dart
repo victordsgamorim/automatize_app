@@ -15,3 +15,11 @@ class RoutePath {
   static String newOS = '/newOS';
   static String settings = '/settings';
 }
+
+class RouteName{
+  static String home = 'Início';
+  static String clients = 'Clientes';
+  static String products = 'Produtos';
+  static String newOS = 'Novas OS';
+  static String settings = 'Configurações';
+}

@@ -21,16 +21,16 @@ class _MenuHeaderState extends State<_MenuHeader> {
   @override
   void initState() {
     _fadeTransition = Tween<double>(begin: 1, end: 0).animate(
-        CurvedAnimation(parent: widget.controller, curve: _animationCurve));
+        CurvedAnimation(parent: widget.controller, curve: kAnimationCurve));
 
     _alignTransition = Tween<AlignmentGeometry>(
             begin: Alignment.centerRight, end: Alignment.center)
         .animate(
-      CurvedAnimation(parent: widget.controller, curve: _animationCurve),
+      CurvedAnimation(parent: widget.controller, curve: kAnimationCurve),
     );
 
     _rotateTransition = Tween<double>(begin: 0, end: .5).animate(
-        CurvedAnimation(parent: widget.controller, curve: _animationCurve));
+        CurvedAnimation(parent: widget.controller, curve: kAnimationCurve));
     super.initState();
   }
 

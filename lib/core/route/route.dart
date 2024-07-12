@@ -15,20 +15,24 @@ final router = GoRouter(
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
       pageBuilder: (context, state, child) {
-        return NoTransitionPage(child: ScaffoldNavigationPage(child: child));
+        return NoTransitionPage(
+            child: ScaffoldNavigationPage(state: state, child: child));
       },
       routes: [
         NoTransitionGoRouter(
-            parentNavigatorKey: _shellNavigatorKey,
+            name: RouteName.home,
             path: RoutePath.home,
+            parentNavigatorKey: _shellNavigatorKey,
             child: (context, state) => const HomePage()),
         NoTransitionGoRouter(
+            name: RouteName.clients,
             parentNavigatorKey: _shellNavigatorKey,
             path: RoutePath.clients,
             child: (context, state) => const ClientsPage()),
         NoTransitionGoRouter(
-            parentNavigatorKey: _shellNavigatorKey,
+            name: RouteName.products,
             path: RoutePath.products,
+            parentNavigatorKey: _shellNavigatorKey,
             child: (context, state) => const ProductsPage()),
       ],
     )

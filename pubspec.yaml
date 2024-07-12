@@ -28,6 +28,8 @@ dependencies:
   sliver_tools: ^0.2.12
   data_table_2: ^2.5.15
 
+  responsive_framework: ^1.4.0
+
 
 dev_dependencies:
   flutter_test:
