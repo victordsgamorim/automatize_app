@@ -39,10 +39,7 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                width: isTablet
-                    ? (constraints.maxWidth / 2.3).clamp(300, 500)
-                    : constraints.maxWidth,
+              Expanded(
                 child: AutomatizeTextField(
                   controller: _searchController,
                   focusNode: _searchNode,
@@ -50,11 +47,14 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               if (isTablet)
-                AutomatizeButton.rectangle(
-                  onPressed: logoutItem.onTap,
-                  icon: Icon(logoutItem.icon),
-                  label: Text(logoutItem.title),
-                )
+                ...[
+                  const SizedBox(width: 16),
+                  AutomatizeButton.rectangle(
+                    onPressed: logoutItem.onTap,
+                    icon: Icon(logoutItem.icon),
+                    label: Text(logoutItem.title),
+                  )
+                ]
             ],
           ),
           MultipleRadioOption(

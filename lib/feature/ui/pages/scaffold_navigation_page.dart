@@ -1,4 +1,3 @@
-import 'package:automatize_app/core/route/route_path.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu_item.dart';
 import 'package:automatize_app/feature/ui/components/menu/side_menu.dart';
@@ -25,16 +24,10 @@ class ScaffoldNavigationPage extends StatefulWidget {
 class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
   int _currentIndex = 0;
 
-  void _onTap(int index) {
-    final bool isSamePage = index == widget.navigationShell.currentIndex;
-    if (isSamePage) return;
-    widget.navigationShell.goBranch(index, initialLocation: isSamePage);
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final isMobile = width <= tablet;
+    final showMobileLayout = isMobile(width);
     return ResponsiveScaledBox(
       width: ResponsiveValue<double>(context,
           defaultValue: width,
@@ -45,14 +38,14 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
       child: BouncingScrollWrapper.builder(
         context,
         Scaffold(
-          appBar: isMobile
+          appBar: showMobileLayout
               ? AppBar(
                   centerTitle: false,
                   title: Text(widget.state.topRoute?.name ?? ""),
                   backgroundColor: context.colorScheme.onPrimary,
                 )
               : null,
-          drawer: isMobile
+          drawer: showMobileLayout
               ? Drawer(
                   backgroundColor: context.colorScheme.onPrimary,
                   child: CustomScrollView(
@@ -80,7 +73,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
                 ])),
             child: Row(
               children: [
-                if (!isMobile)
+                if (!showMobileLayout)
                   SideMenu(
                     index: _currentIndex,
                     menus: _menus,
@@ -105,6 +98,17 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
   _onChanged(int index) {
     if (index == 5) return;
     _currentIndex = index;
+  }
+
+  void _onTap(int index) {
+    final bool isSamePage = index == widget.navigationShell.currentIndex;
+    if (isSamePage) return;
+    widget.navigationShell.goBranch(index, initialLocation: isSamePage);
+    if (isMobile(MediaQuery.sizeOf(context).width)) {
+      Future.delayed(const Duration(milliseconds: 85), () {
+        context.pop();
+      });
+    }
   }
 
   List<MenuItem> get _menus {
@@ -133,3 +137,5 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
 MenuItem logoutMenu() {
   return MenuItem(title: "Sair", icon: Icons.logout_rounded, onTap: () {});
 }
+
+bool isMobile(double width) => width <= tablet;

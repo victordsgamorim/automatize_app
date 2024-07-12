@@ -338,41 +338,39 @@ class MaterialTheme {
   }
 
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
-        useMaterial3: true,
-        brightness: colorScheme.brightness,
-        fontFamily: FontFamily.lexend,
-        colorScheme: colorScheme,
-        textTheme: textTheme.apply(
-          bodyColor: colorScheme.onSurface,
-          displayColor: colorScheme.onSurface,
+      useMaterial3: true,
+      brightness: colorScheme.brightness,
+      fontFamily: FontFamily.lexend,
+      colorScheme: colorScheme,
+      textTheme: textTheme.apply(
+        bodyColor: colorScheme.onSurface,
+        displayColor: colorScheme.onSurface,
+      ),
+      scaffoldBackgroundColor: colorScheme.surface,
+      canvasColor: colorScheme.surface,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.onPrimary,
+        prefixIconColor: colorScheme.outline,
+        labelStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
-        scaffoldBackgroundColor: colorScheme.surface,
-        canvasColor: colorScheme.surface,
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: colorScheme.onPrimary,
-          prefixIconColor: colorScheme.outline,
-          labelStyle:
-              textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+        textStyle: WidgetStateProperty.all(
+            textTheme.bodyMedium?.copyWith(fontSize: 16)),
+      )),
+      radioTheme: RadioThemeData(
+        fillColor: WidgetStateProperty.all(colorScheme.primary),
+      ),
+      appBarTheme: AppBarTheme(
+          titleTextStyle: textTheme.titleLarge?.copyWith(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w600,
           ),
-        ),
-        textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-          textStyle: WidgetStateProperty.all(
-              textTheme.bodyMedium?.copyWith(fontSize: 16)),
-        )),
-        radioTheme: RadioThemeData(
-          fillColor: WidgetStateProperty.all(colorScheme.primary),
-        ),
-        appBarTheme: AppBarTheme(
-            titleTextStyle: textTheme.titleLarge?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-            iconTheme: IconThemeData(color: colorScheme.primary)),
-      );
+          iconTheme: IconThemeData(color: colorScheme.primary)));
 
   List<ExtendedColor> get extendedColors => [];
 }
