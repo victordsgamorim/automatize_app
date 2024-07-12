@@ -10,7 +10,7 @@ class AutomatizeHeader extends StatelessWidget {
     return Text(
       label,
       style: context.textTheme.headlineLarge?.copyWith(
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w600,
         color: context.colorScheme.primary,
       ),
     );

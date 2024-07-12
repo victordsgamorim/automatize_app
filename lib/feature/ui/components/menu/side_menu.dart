@@ -3,17 +3,22 @@ import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:automatize_app/feature/ui/components/automatize_header.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu_item.dart';
+
 part 'menu_header.dart';
 
 const kAnimationDuration = Duration(milliseconds: 300);
 const kAnimationCurve = Curves.linear;
 
 class SideMenu extends StatefulWidget {
+  final int index;
   final List<MenuItem> menus;
+  final Function(int index) onChanged;
 
   const SideMenu({
     super.key,
+    required this.index,
     required this.menus,
+    required this.onChanged,
   });
 
   @override
@@ -70,8 +75,10 @@ class _SideMenuState extends State<SideMenu>
                     ),
                   ),
                   SliverMenu(
+                    index: widget.index,
                     controller: _animationController,
                     menus: widget.menus,
+                    onChanged: widget.onChanged,
                   ),
                 ],
               ),

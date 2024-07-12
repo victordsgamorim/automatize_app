@@ -5,17 +5,25 @@ import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adap
 import 'package:sliver_tools/sliver_tools.dart';
 
 class SliverMenu extends StatefulWidget {
+  final int index;
   final List<MenuItem> menus;
   final AnimationController? controller;
+  final Function(int index) onChanged;
 
-  const SliverMenu({super.key, this.controller, required this.menus});
+  const SliverMenu({
+    super.key,
+    required this.index,
+    required this.menus,
+    required this.onChanged,
+    this.controller,
+  });
 
   @override
   State<SliverMenu> createState() => _SliverMenuState();
 }
 
 class _SliverMenuState extends State<SliverMenu> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
   late List<MenuItem> _mainMenu;
   late List<MenuItem> _bottomMenu;
@@ -24,6 +32,7 @@ class _SliverMenuState extends State<SliverMenu> {
 
   @override
   void initState() {
+    _currentIndex = widget.index;
     _mainMenu = widget.menus.sublist(0, endSublist);
     _bottomMenu = widget.menus.sublist(endSublist);
     super.initState();
@@ -48,6 +57,7 @@ class _SliverMenuState extends State<SliverMenu> {
                     menu.onTap();
                     setState(() {
                       _currentIndex = index;
+                      widget.onChanged(index);
                     });
                   },
                 ),
@@ -73,6 +83,7 @@ class _SliverMenuState extends State<SliverMenu> {
                       menu.onTap();
                       setState(() {
                         _currentIndex = endSublist + index;
+                        widget.onChanged(_currentIndex);
                       });
                     },
                   );

@@ -23,6 +23,8 @@ class ScaffoldNavigationPage extends StatefulWidget {
 }
 
 class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
@@ -40,13 +42,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
           appBar: isMobile
               ? AppBar(
                   centerTitle: false,
-                  title: Text(
-                    widget.state.topRoute?.name ?? "",
-                    style: context.textTheme.titleLarge?.copyWith(
-                      color: context.colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  title: Text(widget.state.topRoute?.name ?? ""),
                   backgroundColor: context.colorScheme.onPrimary,
                 )
               : null,
@@ -57,7 +53,11 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
                     slivers: [
                       SliverPadding(
                         padding: const EdgeInsets.all(8.0),
-                        sliver: SliverMenu(menus: _menus..add(logoutMenu())),
+                        sliver: SliverMenu(
+                          index: _currentIndex,
+                          menus: _menus..add(logoutMenu()),
+                          onChanged: _onChanged,
+                        ),
                       )
                     ],
                   ),
@@ -74,7 +74,12 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
                 ])),
             child: Row(
               children: [
-                if (!isMobile) SideMenu(menus: _menus),
+                if (!isMobile)
+                  SideMenu(
+                    index: _currentIndex,
+                    menus: _menus,
+                    onChanged: _onChanged,
+                  ),
                 Expanded(
                   child: Center(
                       child: Padding(
@@ -89,6 +94,11 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
         dragWithMouse: true,
       ),
     );
+  }
+
+  _onChanged(index) {
+    if(index == 5) return;
+    _currentIndex = index;
   }
 
   List<MenuItem> get _menus {

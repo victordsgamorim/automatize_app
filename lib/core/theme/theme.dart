@@ -366,6 +366,12 @@ class MaterialTheme {
         radioTheme: RadioThemeData(
           fillColor: WidgetStateProperty.all(colorScheme.primary),
         ),
+        appBarTheme: AppBarTheme(
+            titleTextStyle: textTheme.titleLarge?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.w600,
+            ),
+            iconTheme: IconThemeData(color: colorScheme.primary)),
       );
 
   List<ExtendedColor> get extendedColors => [];
