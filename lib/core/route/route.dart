@@ -7,37 +7,97 @@ import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:go_router/go_router.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final router = GoRouter(
   initialLocation: '/home',
   navigatorKey: _rootNavigatorKey,
   routes: [
-    ShellRoute(
-      navigatorKey: _shellNavigatorKey,
-      pageBuilder: (context, state, child) {
+    StatefulShellRoute.indexedStack(
+      pageBuilder: (context, state, navigationShell) {
         return NoTransitionPage(
-            child: ScaffoldNavigationPage(state: state, child: child));
+          child: ScaffoldNavigationPage(
+              state: state, navigationShell: navigationShell),
+        );
       },
-      routes: [
-        NoTransitionGoRouter(
-            name: RouteName.home,
-            path: RoutePath.home,
-            parentNavigatorKey: _shellNavigatorKey,
-            child: (context, state) => const HomePage()),
-        NoTransitionGoRouter(
-            name: RouteName.clients,
-            parentNavigatorKey: _shellNavigatorKey,
-            path: RoutePath.clients,
-            child: (context, state) => const ClientsPage()),
-        NoTransitionGoRouter(
-            name: RouteName.products,
-            path: RoutePath.products,
-            parentNavigatorKey: _shellNavigatorKey,
-            child: (context, state) => const ProductsPage()),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            NoTransitionGoRouter(
+                name: RouteName.home,
+                path: RoutePath.home,
+                child: (context, state) => const HomePage()),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            NoTransitionGoRouter(
+                name: RouteName.clients,
+                path: RoutePath.clients,
+                child: (context, state) => const ClientsPage()),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            NoTransitionGoRouter(
+                name: RouteName.products,
+                path: RoutePath.products,
+                child: (context, state) => const ProductsPage()),
+          ],
+        ),
       ],
     )
   ],
 );
+
+// GoRouter route = GoRouter(
+//   initialLocation: RoutePath.init,
+//   navigatorKey: _rootNavigatorKey,
+//   routes: <RouteBase>[
+//     StatefulShellRoute.indexedStack(
+//       builder: (context, state, navigationShell) {
+//         return DashboardPage(navigationShell: navigationShell);
+//       },
+//       branches: [
+//         StatefulShellBranch(
+//           routes: [
+//             CupertinoTransitionGoRouter(
+//                 path: RoutePath.init,
+//                 builder: (_) => const BlastPage(),
+//                 routes: [
+//                   CupertinoTransitionGoRouter(
+//                     path: RoutePath.registerBlast,
+//                     builder: (_) => const RegisterBlastPage(),
+//                   ),
+//                   CupertinoTransitionGoRouter(
+//                     path: RoutePath.dumper,
+//                     builder: (state) => const DumperPage(),
+//                     routes: [
+//                       CupertinoTransitionGoRouter(
+//                         path: RoutePath.management,
+//                         builder: (state) => const ManagementPage(),
+//                       )
+//                     ],
+//                   )
+//                 ])
+//           ],
+//         ),
+//         StatefulShellBranch(
+//           navigatorKey: _shellNavigatorKey,
+//           routes: [
+//             CupertinoTransitionGoRouter(
+//                 path: RoutePath.vehicle,
+//                 builder: (_) => const VehiclePage(),
+//                 routes: [
+//                   CupertinoTransitionGoRouter(
+//                     path: RoutePath.registerVehicle,
+//                     builder: (state) => const RegisterVehiclePage(),
+//                   )
+//                 ])
+//           ],
+//         )
+//       ],
+//     )
+//   ],
+// );
 
 class FadeTranslationTransitionGoRouter extends GoRoute {
   FadeTranslationTransitionGoRouter({
@@ -76,7 +136,7 @@ class NoTransitionGoRouter extends GoRoute {
   NoTransitionGoRouter({
     super.name,
     required super.path,
-    required super.parentNavigatorKey,
+    super.parentNavigatorKey,
     required Widget Function(BuildContext context, GoRouterState state) child,
     List<GoRoute> super.routes = const [],
   }) : super(

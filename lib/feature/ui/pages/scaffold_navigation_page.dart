@@ -10,12 +10,12 @@ import '../../../common_libs.dart';
 
 class ScaffoldNavigationPage extends StatefulWidget {
   final GoRouterState state;
-  final Widget child;
+  final StatefulNavigationShell navigationShell;
 
   const ScaffoldNavigationPage({
     super.key,
     required this.state,
-    required this.child,
+    required this.navigationShell,
   });
 
   @override
@@ -24,6 +24,12 @@ class ScaffoldNavigationPage extends StatefulWidget {
 
 class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
   int _currentIndex = 0;
+
+  void _onTap(int index) {
+    final bool isSamePage = index == widget.navigationShell.currentIndex;
+    if (isSamePage) return;
+    widget.navigationShell.goBranch(index, initialLocation: isSamePage);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +90,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
                   child: Center(
                       child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: widget.child,
+                    child: widget.navigationShell,
                   )),
                 )
               ],
@@ -96,8 +102,8 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
     );
   }
 
-  _onChanged(index) {
-    if(index == 5) return;
+  _onChanged(int index) {
+    if (index == 5) return;
     _currentIndex = index;
   }
 
@@ -106,16 +112,16 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
       MenuItem(
         title: "Início",
         icon: FontAwesomeIcons.house,
-        onTap: () => context.go(R.home),
+        onTap: () => _onTap(0),
       ),
       MenuItem(
           title: "Clientes",
           icon: FontAwesomeIcons.users,
-          onTap: () => context.go(R.clients)),
+          onTap: () => _onTap(1)),
       MenuItem(
           title: "Produtos",
           icon: FontAwesomeIcons.boxesStacked,
-          onTap: () => context.go(R.products)),
+          onTap: () => _onTap(2)),
       MenuItem(
           title: "Criar OS", icon: FontAwesomeIcons.circlePlus, onTap: () {}),
       MenuItem(
