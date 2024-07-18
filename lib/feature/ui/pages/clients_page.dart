@@ -11,7 +11,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class ClientsPage extends StatefulWidget {
-  const ClientsPage({super.key});
+  final bool isDrawer;
+
+  const ClientsPage({super.key, this.isDrawer = false});
 
   @override
   State<ClientsPage> createState() => _ClientsPageState();
@@ -33,51 +35,54 @@ class _ClientsPageState extends State<ClientsPage> {
     final showMobileLayout = isMobile(context);
     const btnIcon = Icon(FontAwesomeIcons.userPlus, size: 18);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!showMobileLayout) ...dividedHeader('Clientes'),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: AutomatizeTextField(
-                  controller: _searchController,
-                  focusNode: _searchNode,
-                  label: "Buscar cliente...",
-                  icon: Icons.search_rounded,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!showMobileLayout && !widget.isDrawer)
+            ...dividedHeader('Clientes'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AutomatizeTextField(
+                    controller: _searchController,
+                    focusNode: _searchNode,
+                    label: "Buscar cliente...",
+                    icon: Icons.search_rounded,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                width: 16,
-              ),
-              showMobileLayout
-                  ? AutomatizeButton.square(
-                      onPressed: _onTapNewClient, icon: btnIcon)
-                  : AutomatizeButton.rectangle(
-                      onPressed: _onTapNewClient,
-                      icon: btnIcon,
-                      label: const Padding(
-                        padding: EdgeInsets.only(left: 8.0),
-                        child: Text("Adicionar Cliente"),
-                      ),
-                    )
-            ],
+                const SizedBox(width: 16),
+                if (!widget.isDrawer)
+                  showMobileLayout
+                      ? AutomatizeButton.square(
+                          onPressed: _onTapNewClient, icon: btnIcon)
+                      : AutomatizeButton.rectangle(
+                          onPressed: _onTapNewClient,
+                          icon: btnIcon,
+                          label: const Padding(
+                            padding: EdgeInsets.only(left: 8.0),
+                            child: Text("Adicionar Cliente"),
+                          ),
+                        )
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: PaginatedTable(
-            columns: const [
-              DataColumn2(label: Text('Cliente')),
-              DataColumn2(label: Text('Endereço')),
-            ],
-            source: ClientDataTableSource(onTap: () {
-              context.go(R.newClient);
-            }),
-          ),
-        )
-      ],
+          Expanded(
+            child: PaginatedTable(
+              columns: const [
+                DataColumn2(label: Text('Cliente')),
+                DataColumn2(label: Text('Endereço')),
+              ],
+              source: ClientDataTableSource(onTap: () {
+                context.go(R.newClient);
+              }),
+            ),
+          )
+        ],
+      ),
     );
   }
 

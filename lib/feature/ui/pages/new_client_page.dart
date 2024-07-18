@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:automatize_app/feature/ui/components/automatize_divider.dart';
@@ -6,7 +8,9 @@ import 'package:automatize_app/feature/ui/components/form_wrapper.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/multiple_radio_option.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/radio_item.dart';
 import 'package:automatize_app/feature/ui/components/text_field/automatize_textfield.dart';
+import 'package:automatize_app/feature/ui/pages/clients_page.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -22,6 +26,7 @@ class NewClientPage extends StatefulWidget {
 class _NewClientPageState extends State<NewClientPage> {
   late final ValueNotifier<int> _addressCount;
   late final ValueNotifier<int> _phoneCount;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -33,121 +38,171 @@ class _NewClientPageState extends State<NewClientPage> {
   @override
   Widget build(BuildContext context) {
     final showMobileLayout = isMobile(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!showMobileLayout) ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return LayoutBuilder(builder: (context, constraints) {
+      final drawerWidth = constraints.maxWidth / 2;
+      return Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Colors.transparent,
+        endDrawer: Drawer(
+          backgroundColor: context.colorScheme.onPrimary,
+          width: drawerWidth.clamp(304, 800),
+          child: const ClientsPage(isDrawer: true),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
+          child: Column(
             children: [
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () => context.pop(),
-                      icon: Icon(
-                        Icons.arrow_back_rounded,
-                        color: context.colorScheme.primary,
-                      )),
-                  const SizedBox(width: 8),
-                  const AutomatizeHeader(label: "Novo Cliente"),
-                ],
-              ),
-              Row(
-                children: [
-                  AutomatizeButton.square(
-                    onPressed: () {},
-                    icon: const Icon(Icons.done_rounded, color: Colors.white),
-                    color: Colors.lightGreen,
-                  ),
-                  const SizedBox(width: 8),
-                  AutomatizeButton.rectangle(
-                    onPressed: () {},
-                    icon: const Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(FontAwesomeIcons.users, size: 18),
-                    ),
-                    label: const Text("Clientes"),
-                  ),
-                ],
-              )
-            ],
-          ),
-          const AutomatizeDivider()
-        ],
-        Expanded(
-          child: CustomScrollView(
-            slivers: [
-              const SliverToBoxAdapter(child: _PersonalForm()),
-              ValueListenableBuilder(
-                valueListenable: _addressCount,
-                builder: (context, count, child) {
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    sliver: MultiSliver(
-                      pushPinnedChildren: true,
-                      children: [
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: _SliverTitlePinned(
-                            title: 'Endereço',
-                            icon: Icons.location_on_outlined,
-                            minusVisibility: count > 1,
-                            onMinusTap: () {
-                              _addressCount.value = _addressCount.value - 1;
-                            },
-                            onPlusTap: () {
-                              _addressCount.value = _addressCount.value + 1;
-                            },
-                          ),
+              if (showMobileLayout)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Align(
+                      alignment: Alignment.centerRight,
+                      child: _actionButton(
+                        action: AutomatizeButton.square(
+                          onPressed: () => context.pop(),
+                          icon: const Icon(Icons.close_rounded,
+                              color: Colors.white),
+                          color: Colors.redAccent,
                         ),
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              return _AddressForm(position: index + 1);
-                            },
-                            childCount: count,
-                          ),
-                        )
+                      )),
+                ),
+              if (!showMobileLayout) ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: () => context.pop(),
+                            icon: Icon(
+                              Icons.arrow_back_rounded,
+                              color: context.colorScheme.primary,
+                            )),
+                        const SizedBox(width: 8),
+                        const AutomatizeHeader(label: "Novo Cliente"),
                       ],
                     ),
-                  );
-                },
-              ),
-              ValueListenableBuilder(
-                valueListenable: _phoneCount,
-                builder: (context, count, child) {
-                  return MultiSliver(
-                    pushPinnedChildren: true,
-                    children: [
-                      SliverPersistentHeader(
-                        pinned: true,
-                        delegate: _SliverTitlePinned(
-                          title: 'Telefone',
-                          icon: Icons.phone_outlined,
-                          minusVisibility: count > 1,
-                          onMinusTap: () {
-                            _phoneCount.value = _phoneCount.value - 1;
-                          },
-                          onPlusTap: () {
-                            _phoneCount.value = _phoneCount.value + 1;
-                          },
-                        ),
-                      ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return const _PhoneForm();
-                        }, childCount: count),
-                      )
-                    ],
-                  );
-                },
+                    _actionButton()
+                  ],
+                ),
+                const AutomatizeDivider()
+              ],
+              Expanded(
+                child: CustomScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  slivers: [
+                    const SliverToBoxAdapter(child: _PersonalForm()),
+                    ValueListenableBuilder(
+                      valueListenable: _addressCount,
+                      builder: (context, count, child) {
+                        return SliverPadding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          sliver: MultiSliver(
+                            pushPinnedChildren: true,
+                            children: [
+                              SliverPersistentHeader(
+                                pinned: true,
+                                delegate: _SliverTitlePinned(
+                                  title: 'Endereço',
+                                  icon: Icons.location_on_outlined,
+                                  minusVisibility: count > 1,
+                                  onMinusTap: () {
+                                    _addressCount.value =
+                                        _addressCount.value - 1;
+                                  },
+                                  onPlusTap: () {
+                                    _addressCount.value =
+                                        _addressCount.value + 1;
+                                  },
+                                ),
+                              ),
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    return _AddressForm(position: index + 1);
+                                  },
+                                  childCount: count,
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    ValueListenableBuilder(
+                      valueListenable: _phoneCount,
+                      builder: (context, count, child) {
+                        return SliverPadding(
+                          padding: const EdgeInsets.only(bottom: 120.0),
+                          sliver: MultiSliver(
+                            pushPinnedChildren: true,
+                            children: [
+                              SliverPersistentHeader(
+                                pinned: true,
+                                delegate: _SliverTitlePinned(
+                                  title: 'Telefone',
+                                  icon: Icons.phone_outlined,
+                                  minusVisibility: count > 1,
+                                  onMinusTap: () {
+                                    _phoneCount.value = _phoneCount.value - 1;
+                                  },
+                                  onPlusTap: () {
+                                    _phoneCount.value = _phoneCount.value + 1;
+                                  },
+                                ),
+                              ),
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                    (context, index) {
+                                  return const _PhoneForm();
+                                }, childCount: count),
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               )
             ],
           ),
-        )
+        ),
+      );
+    });
+  }
+
+  Row _actionButton({Widget? action}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (action != null) ...[action, const SizedBox(width: 8)],
+        AutomatizeButton.square(
+          onPressed: () {},
+          icon: const Icon(Icons.done_rounded, color: Colors.white),
+          color: Colors.lightGreen,
+        ),
+        const SizedBox(width: 8),
+        AutomatizeButton.rectangle(
+          onPressed: () {
+            _scaffoldKey.currentState?.openEndDrawer();
+          },
+          icon: const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Icon(FontAwesomeIcons.users, size: 18),
+          ),
+          label: const Text("Clientes"),
+        ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _addressCount.dispose();
+    _phoneCount.dispose();
+    super.dispose();
   }
 }
 
@@ -380,7 +435,7 @@ class _AddressFormState extends State<_AddressForm> {
                   padding: const EdgeInsets.only(left: 16.0),
                   child: SizedBox(
                     width: 300,
-                    child:  DropdownWithTitle(
+                    child: DropdownWithTitle(
                       hint: "Selecione um estado",
                       label: 'Estado',
                       items: statesList,
@@ -424,8 +479,10 @@ class _PhoneForm extends StatefulWidget {
 class _PhoneFormState extends State<_PhoneForm> {
   late final TextEditingController _phoneController = TextEditingController();
   late final TextEditingController _fixedController = TextEditingController();
+  late final TextEditingController _otherController = TextEditingController();
   late final FocusNode _phoneNode = FocusNode();
   late final FocusNode _fixedNode = FocusNode();
+  late final FocusNode _otherNode = FocusNode();
 
   int phoneType = 0;
 
@@ -439,6 +496,9 @@ class _PhoneFormState extends State<_PhoneForm> {
       filter: {"#": RegExp(r'[0-9]')},
       type: MaskAutoCompletionType.lazy);
 
+  final _otherMaskFormatter = MaskTextInputFormatter(
+      filter: {"": RegExp(r'[0-9]')}, type: MaskAutoCompletionType.lazy);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -446,28 +506,13 @@ class _PhoneFormState extends State<_PhoneForm> {
       child: FormWrapper(
         child: Column(
           children: [
-            phoneType == 1
-                ? AutomatizeTextFieldWithTitle(
-                    controller: _fixedController,
-                    focusNode: _fixedNode,
-                    label: "Físico",
-                    hint: "(00) 0000-0000",
-                    icon: Icons.phone,
-                    inputFormatters: [_fixedMaskFormatter],
-                  )
-                : AutomatizeTextFieldWithTitle(
-                    controller: _phoneController,
-                    focusNode: _phoneNode,
-                    label: "Celular",
-                    hint: "(00) 90000-0000",
-                    icon: Icons.phone_android,
-                    inputFormatters: [_mobileMaskFormatter],
-                  ),
+            _phoneForm,
             MultipleRadioOption(
               value: phoneType,
               items: const [
                 RadioItem(label: "Telefone Celular"),
                 RadioItem(label: "Telefone Físico"),
+                RadioItem(label: "Outro"),
               ],
               onChanged: (int value) {
                 setState(() {
@@ -478,6 +523,51 @@ class _PhoneFormState extends State<_PhoneForm> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget get _phoneForm {
+    if (phoneType == 0) {
+      return AutomatizeTextFieldWithTitle(
+        key: const Key("phoneField"),
+        controller: _phoneController,
+        focusNode: _phoneNode,
+        label: "Celular",
+        hint: "(00) 90000-0000",
+        icon: Icons.phone_android,
+        inputFormatters: [_mobileMaskFormatter],
+      );
+    }
+
+    if (phoneType == 1) {
+      return AutomatizeTextFieldWithTitle(
+        key: const Key("fixedField"),
+        controller: _fixedController,
+        focusNode: _fixedNode,
+        label: "Físico",
+        hint: "(00) 0000-0000",
+        icon: Icons.phone,
+        inputFormatters: [_fixedMaskFormatter],
+      );
+    }
+    return AutomatizeTextFieldWithTitle(
+      key: const Key("otherField"),
+      controller: _otherController,
+      focusNode: _otherNode,
+      label: "Outro",
+      icon: Icons.phone,
+      inputFormatters: [
+        TextInputFormatter.withFunction((oldValue, newValue) {
+          if (newValue.text.isEmpty) {
+            return newValue;
+          } else if (newValue.text == '+') {
+            return TextEditingValue(text: newValue.text);
+          } else if (RegExp(r'^[+]?[0-9]*$').hasMatch(newValue.text)) {
+            return newValue;
+          }
+          return oldValue;
+        })
+      ],
     );
   }
 
@@ -513,64 +603,69 @@ class _SliverTitlePinned extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     final isShrinked = shrinkOffset > 0;
-    return Container(
-      height: 60,
-      width: double.maxFinite,
-      padding: const EdgeInsets.only(bottom: 8),
-      decoration: isShrinked
-          ? BoxDecoration(
-              color: context.colorScheme.onPrimary,
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 5,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            )
-          : null,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: context.colorScheme.primary),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  title,
-                  style: context.textTheme.titleLarge?.copyWith(
-                      color: context.colorScheme.primary,
-                      fontWeight: FontWeight.w600),
+    return Stack(
+      children: [
+        if (isShrinked)
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+                bottomRight: Radius.circular(16),
+                bottomLeft: Radius.circular(16)),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: Container(
+                height: 80,
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(.5),
                 ),
               ),
-            ],
+            ),
           ),
-          Row(
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AbsorbPointer(
-                absorbing: !minusVisibility,
-                child: Opacity(
-                  opacity: minusVisibility ? 1 : 0.5,
-                  child: TextButton.icon(
-                    onPressed: onMinusTap,
-                    label: const Icon(Icons.remove_circle),
+              Row(
+                children: [
+                  Icon(icon, color: context.colorScheme.primary),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      title,
+                      style: context.textTheme.titleLarge?.copyWith(
+                          color: context.colorScheme.primary,
+                          fontWeight: FontWeight.w600),
+                    ),
                   ),
-                ),
+                ],
               ),
-              TextButton.icon(
-                onPressed: onPlusTap,
-                label: const Icon(Icons.add_circle),
+              Row(
+                children: [
+                  AbsorbPointer(
+                    absorbing: !minusVisibility,
+                    child: Opacity(
+                      opacity: minusVisibility ? 1 : 0.5,
+                      child: TextButton.icon(
+                        onPressed: onMinusTap,
+                        label: const Icon(Icons.remove_circle),
+                      ),
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: onPlusTap,
+                    label: const Icon(Icons.add_circle),
+                  )
+                ],
               )
             ],
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 
   @override
-  double get maxExtent => 35;
+  double get maxExtent => 60;
 
   @override
   double get minExtent => 35;

@@ -84,7 +84,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
                 Expanded(
                   child: Center(
                       child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(_currentIndex == 1 || _currentIndex == 2 ? 0 : 16),
                     child: widget.navigationShell,
                   )),
                 )

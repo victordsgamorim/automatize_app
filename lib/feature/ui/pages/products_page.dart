@@ -31,46 +31,49 @@ class _ProductsPageState extends State<ProductsPage> {
     final showMobileLayout = isMobile(context);
     const btnIcon = Icon(FontAwesomeIcons.folderPlus, size: 18);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!showMobileLayout) ...dividedHeader('Produtos'),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: AutomatizeTextField(
-                  controller: _searchController,
-                  focusNode: _searchNode,
-                  label: "Buscar produto...",
-                  icon: Icons.search_rounded,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!showMobileLayout) ...dividedHeader('Produtos'),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AutomatizeTextField(
+                    controller: _searchController,
+                    focusNode: _searchNode,
+                    label: "Buscar produto...",
+                    icon: Icons.search_rounded,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              showMobileLayout
-                  ? AutomatizeButton.square(onPressed: () {}, icon: btnIcon)
-                  : AutomatizeButton.rectangle(
-                      onPressed: () {},
-                      icon: btnIcon,
-                      label: const Padding(
-                        padding: EdgeInsets.only(left: 8.0),
-                        child: Text("Adicionar Produto"),
-                      ),
-                    )
-            ],
+                const SizedBox(width: 16),
+                showMobileLayout
+                    ? AutomatizeButton.square(onPressed: () {}, icon: btnIcon)
+                    : AutomatizeButton.rectangle(
+                        onPressed: () {},
+                        icon: btnIcon,
+                        label: const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Text("Adicionar Produto"),
+                        ),
+                      )
+              ],
+            ),
           ),
-        ),
-        Expanded(
-            child: PaginatedTable(
-          columns: const [
-            DataColumn2(label: Text('Produto'), size: ColumnSize.L),
-            DataColumn2(label: Text('Qnt.'), fixedWidth: 125),
-            DataColumn2(label: Text(r'''Preço (R$)'''), fixedWidth: 125),
-          ],
-          source: ProductDataTableSource(),
-        ))
-      ],
+          Expanded(
+              child: PaginatedTable(
+            columns: const [
+              DataColumn2(label: Text('Produto'), size: ColumnSize.L),
+              DataColumn2(label: Text('Qnt.'), fixedWidth: 125),
+              DataColumn2(label: Text(r'''Preço (R$)'''), fixedWidth: 125),
+            ],
+            source: ProductDataTableSource(),
+          ))
+        ],
+      ),
     );
   }
 
