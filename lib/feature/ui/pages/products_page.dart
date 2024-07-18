@@ -1,4 +1,5 @@
 import 'package:automatize_app/common_libs.dart';
+import 'package:automatize_app/core/route/route_path.dart';
 import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:automatize_app/feature/ui/components/automatize_divider.dart';
 import 'package:automatize_app/feature/ui/components/automatize_header.dart';
@@ -7,6 +8,7 @@ import 'package:automatize_app/feature/ui/components/table/paginated_table.dart'
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -51,9 +53,10 @@ class _ProductsPageState extends State<ProductsPage> {
                 ),
                 const SizedBox(width: 16),
                 showMobileLayout
-                    ? AutomatizeButton.square(onPressed: () {}, icon: btnIcon)
+                    ? AutomatizeButton.square(
+                        onPressed: _onTap, icon: btnIcon)
                     : AutomatizeButton.rectangle(
-                        onPressed: () {},
+                        onPressed: _onTap,
                         icon: btnIcon,
                         label: const Padding(
                           padding: EdgeInsets.only(left: 8.0),
@@ -77,6 +80,10 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
+  void _onTap(){
+    context.go(R.product);
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -87,11 +94,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
 class ProductDataTableSource extends DataTableSource {
   final List<Map<String, dynamic>> _data = [
-    {
-      "name": "Motor",
-      "quantity": 5,
-      "price": 150.75
-    },
+    {"name": "Motor", "quantity": 5, "price": 150.75},
   ];
 
   @override

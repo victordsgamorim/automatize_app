@@ -12,7 +12,7 @@ class MultipleRadioOption extends StatefulWidget {
     required this.value,
     required this.items,
     required this.onChanged,
-  }): assert(value >= 0 && value < items.length);
+  }) : assert(value >= 0 && value < items.length);
 
   @override
   State<MultipleRadioOption> createState() => _MultipleRadioOptionState();

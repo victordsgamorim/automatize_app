@@ -2,7 +2,8 @@ import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/core/route/route_path.dart';
 import 'package:automatize_app/feature/ui/pages/clients_page.dart';
 import 'package:automatize_app/feature/ui/pages/home_page.dart';
-import 'package:automatize_app/feature/ui/pages/new_client_page.dart';
+import 'package:automatize_app/feature/ui/pages/client_page.dart';
+import 'package:automatize_app/feature/ui/pages/product_page.dart';
 import 'package:automatize_app/feature/ui/pages/products_page.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:go_router/go_router.dart';
@@ -37,9 +38,9 @@ final router = GoRouter(
               child: (context, state) => const ClientsPage(),
               routes: [
                 NoTransitionGoRouter(
-                  name: RouteName.newClient,
-                  path: RoutePath.newClient,
-                  child: (context, state) => const NewClientPage(),
+                  name: RouteName.client,
+                  path: RoutePath.client,
+                  child: (context, state) => const ClientPage(),
                 )
               ],
             ),
@@ -48,9 +49,17 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             NoTransitionGoRouter(
-                name: RouteName.products,
-                path: RoutePath.products,
-                child: (context, state) => const ProductsPage()),
+              name: RouteName.products,
+              path: RoutePath.products,
+              child: (context, state) => const ProductsPage(),
+              routes: [
+                NoTransitionGoRouter(
+                  name: RouteName.product,
+                  path: RoutePath.product,
+                  child: (context, state) => const ProductPage(),
+                )
+              ]
+            ),
           ],
         ),
       ],

@@ -1,32 +1,26 @@
 import 'dart:ui';
 
 import 'package:automatize_app/common_libs.dart';
-import 'package:automatize_app/feature/ui/components/automatize_button.dart';
-import 'package:automatize_app/feature/ui/components/automatize_divider.dart';
-import 'package:automatize_app/feature/ui/components/automatize_header.dart';
+import 'package:automatize_app/feature/ui/components/automatize_header_menu.dart';
 import 'package:automatize_app/feature/ui/components/form_wrapper.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/multiple_radio_option.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/radio_item.dart';
 import 'package:automatize_app/feature/ui/components/text_field/automatize_textfield.dart';
-import 'package:automatize_app/feature/ui/pages/clients_page.dart';
-import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
-class NewClientPage extends StatefulWidget {
-  const NewClientPage({super.key});
+class ClientPage extends StatefulWidget {
+  const ClientPage({super.key});
 
   @override
-  State<NewClientPage> createState() => _NewClientPageState();
+  State<ClientPage> createState() => _ClientPageState();
 }
 
-class _NewClientPageState extends State<NewClientPage> {
+class _ClientPageState extends State<ClientPage> {
   late final ValueNotifier<int> _addressCount;
   late final ValueNotifier<int> _phoneCount;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -37,164 +31,89 @@ class _NewClientPageState extends State<NewClientPage> {
 
   @override
   Widget build(BuildContext context) {
-    final showMobileLayout = isMobile(context);
-    return LayoutBuilder(builder: (context, constraints) {
-      final drawerWidth = constraints.maxWidth / 2;
-      return Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.transparent,
-        endDrawer: Drawer(
-          backgroundColor: context.colorScheme.onPrimary,
-          width: drawerWidth.clamp(304, 800),
-          child: const ClientsPage(isDrawer: true),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
-          child: Column(
-            children: [
-              if (showMobileLayout)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Align(
-                      alignment: Alignment.centerRight,
-                      child: _actionButton(
-                        action: AutomatizeButton.square(
-                          onPressed: () => context.pop(),
-                          icon: const Icon(Icons.close_rounded,
-                              color: Colors.white),
-                          color: Colors.redAccent,
-                        ),
-                      )),
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
+      child: Column(
+        children: [
+          const AutomatizeHeaderMenu(label: 'Novo Cliente'),
+          Expanded(
+            child: CustomScrollView(
+              physics: const ClampingScrollPhysics(),
+              slivers: [
+                const SliverToBoxAdapter(child: _PersonalForm()),
+                ValueListenableBuilder(
+                  valueListenable: _addressCount,
+                  builder: (context, count, child) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      sliver: MultiSliver(
+                        pushPinnedChildren: true,
+                        children: [
+                          SliverPersistentHeader(
+                            pinned: true,
+                            delegate: _SliverTitlePinned(
+                              title: 'Endereço',
+                              icon: Icons.location_on_outlined,
+                              minusVisibility: count > 1,
+                              onMinusTap: () {
+                                _addressCount.value = _addressCount.value - 1;
+                              },
+                              onPlusTap: () {
+                                _addressCount.value = _addressCount.value + 1;
+                              },
+                            ),
+                          ),
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                return _AddressForm(position: index + 1);
+                              },
+                              childCount: count,
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              if (!showMobileLayout) ...[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                            onPressed: () => context.pop(),
-                            icon: Icon(
-                              Icons.arrow_back_rounded,
-                              color: context.colorScheme.primary,
-                            )),
-                        const SizedBox(width: 8),
-                        const AutomatizeHeader(label: "Novo Cliente"),
-                      ],
-                    ),
-                    _actionButton()
-                  ],
+                ValueListenableBuilder(
+                  valueListenable: _phoneCount,
+                  builder: (context, count, child) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.only(bottom: 120.0),
+                      sliver: MultiSliver(
+                        pushPinnedChildren: true,
+                        children: [
+                          SliverPersistentHeader(
+                            pinned: true,
+                            delegate: _SliverTitlePinned(
+                              title: 'Telefone',
+                              icon: Icons.phone_outlined,
+                              minusVisibility: count > 1,
+                              onMinusTap: () {
+                                _phoneCount.value = _phoneCount.value - 1;
+                              },
+                              onPlusTap: () {
+                                _phoneCount.value = _phoneCount.value + 1;
+                              },
+                            ),
+                          ),
+                          SliverList(
+                            delegate:
+                                SliverChildBuilderDelegate((context, index) {
+                              return const _PhoneForm();
+                            }, childCount: count),
+                          )
+                        ],
+                      ),
+                    );
+                  },
                 ),
-                const AutomatizeDivider()
               ],
-              Expanded(
-                child: CustomScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  slivers: [
-                    const SliverToBoxAdapter(child: _PersonalForm()),
-                    ValueListenableBuilder(
-                      valueListenable: _addressCount,
-                      builder: (context, count, child) {
-                        return SliverPadding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          sliver: MultiSliver(
-                            pushPinnedChildren: true,
-                            children: [
-                              SliverPersistentHeader(
-                                pinned: true,
-                                delegate: _SliverTitlePinned(
-                                  title: 'Endereço',
-                                  icon: Icons.location_on_outlined,
-                                  minusVisibility: count > 1,
-                                  onMinusTap: () {
-                                    _addressCount.value =
-                                        _addressCount.value - 1;
-                                  },
-                                  onPlusTap: () {
-                                    _addressCount.value =
-                                        _addressCount.value + 1;
-                                  },
-                                ),
-                              ),
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    return _AddressForm(position: index + 1);
-                                  },
-                                  childCount: count,
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    ValueListenableBuilder(
-                      valueListenable: _phoneCount,
-                      builder: (context, count, child) {
-                        return SliverPadding(
-                          padding: const EdgeInsets.only(bottom: 120.0),
-                          sliver: MultiSliver(
-                            pushPinnedChildren: true,
-                            children: [
-                              SliverPersistentHeader(
-                                pinned: true,
-                                delegate: _SliverTitlePinned(
-                                  title: 'Telefone',
-                                  icon: Icons.phone_outlined,
-                                  minusVisibility: count > 1,
-                                  onMinusTap: () {
-                                    _phoneCount.value = _phoneCount.value - 1;
-                                  },
-                                  onPlusTap: () {
-                                    _phoneCount.value = _phoneCount.value + 1;
-                                  },
-                                ),
-                              ),
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                    (context, index) {
-                                  return const _PhoneForm();
-                                }, childCount: count),
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    });
-  }
-
-  Row _actionButton({Widget? action}) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (action != null) ...[action, const SizedBox(width: 8)],
-        AutomatizeButton.square(
-          onPressed: () {},
-          icon: const Icon(Icons.done_rounded, color: Colors.white),
-          color: Colors.lightGreen,
-        ),
-        const SizedBox(width: 8),
-        AutomatizeButton.rectangle(
-          onPressed: () {
-            _scaffoldKey.currentState?.openEndDrawer();
-          },
-          icon: const Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Icon(FontAwesomeIcons.users, size: 18),
-          ),
-          label: const Text("Clientes"),
-        ),
-      ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
