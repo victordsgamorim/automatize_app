@@ -14,12 +14,14 @@ class AutomatizeButton extends StatelessWidget {
     Key? key,
     required VoidCallback onPressed,
     required Widget icon,
+    Color? color,
   }) {
     return AutomatizeButton(
       child: FloatingActionButton(
         onPressed: onPressed,
         elevation: _btnElevation,
         hoverElevation: _btnElevation,
+        backgroundColor: color,
         child: icon,
       ),
     );
@@ -29,7 +31,8 @@ class AutomatizeButton extends StatelessWidget {
     Key? key,
     required VoidCallback onPressed,
     Widget? icon,
-    required Widget label
+    required Widget label,
+    Color? color,
   }) {
     return AutomatizeButton(
       child: FloatingActionButton.extended(
@@ -38,6 +41,7 @@ class AutomatizeButton extends StatelessWidget {
         hoverElevation: _btnElevation,
         icon: icon,
         label: label,
+        backgroundColor: color,
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:automatize_app/feature/ui/components/automatize_divider.dart';
+import 'package:automatize_app/feature/ui/components/automatize_header.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu_item.dart';
 import 'package:automatize_app/feature/ui/components/menu/side_menu.dart';
@@ -27,7 +29,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final showMobileLayout = isMobile(width);
+    final showMobileLayout = isMobile(context);
     return ResponsiveScaledBox(
       width: ResponsiveValue<double>(context,
           defaultValue: width,
@@ -104,7 +106,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
     final bool isSamePage = index == widget.navigationShell.currentIndex;
     if (isSamePage) return;
     widget.navigationShell.goBranch(index, initialLocation: isSamePage);
-    if (isMobile(MediaQuery.sizeOf(context).width)) {
+    if (isMobile(context)) {
       Future.delayed(const Duration(milliseconds: 85), () {
         context.pop();
       });
@@ -138,4 +140,11 @@ MenuItem logoutMenu() {
   return MenuItem(title: "Sair", icon: Icons.logout_rounded, onTap: () {});
 }
 
-bool isMobile(double width) => width <= tablet;
+bool isMobile(BuildContext context) => MediaQuery.sizeOf(context).width <= tablet;
+
+List<Widget> dividedHeader(String title) {
+  return [
+    AutomatizeHeader(label: title),
+    const AutomatizeDivider(),
+  ];
+}

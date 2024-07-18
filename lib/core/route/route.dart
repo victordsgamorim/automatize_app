@@ -2,6 +2,7 @@ import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/core/route/route_path.dart';
 import 'package:automatize_app/feature/ui/pages/clients_page.dart';
 import 'package:automatize_app/feature/ui/pages/home_page.dart';
+import 'package:automatize_app/feature/ui/pages/new_client_page.dart';
 import 'package:automatize_app/feature/ui/pages/products_page.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:go_router/go_router.dart';
@@ -22,17 +23,26 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             NoTransitionGoRouter(
-                name: RouteName.home,
-                path: RoutePath.home,
-                child: (context, state) => const HomePage()),
+              name: RouteName.home,
+              path: RoutePath.home,
+              child: (context, state) => const HomePage(),
+            ),
           ],
         ),
         StatefulShellBranch(
           routes: [
             NoTransitionGoRouter(
-                name: RouteName.clients,
-                path: RoutePath.clients,
-                child: (context, state) => const ClientsPage()),
+              name: RouteName.clients,
+              path: RoutePath.clients,
+              child: (context, state) => const ClientsPage(),
+              routes: [
+                NoTransitionGoRouter(
+                  name: RouteName.newClient,
+                  path: RoutePath.newClient,
+                  child: (context, state) => const NewClientPage(),
+                )
+              ],
+            ),
           ],
         ),
         StatefulShellBranch(
