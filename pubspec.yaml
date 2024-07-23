@@ -93,3 +93,9 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 #  flutter pub get && dart run build_runner build --delete-conflicting-outputs
+
+
+
+#Build command: flutter/bin/flutter/ build web --release
+#Output directory: build/web
+#Install Command: if cd flutter; then git pull && cd .. ; else git clone https://github.com/flutter/flutter.git; fi && ls && flutter/bin/flutter doctor && flutter/bin/flutter clean && flutter/bin/flutter config --enable-web
