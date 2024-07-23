@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:automatize_app/common_libs.dart';
+import 'package:automatize_app/feature/model/address.dart';
 import 'package:automatize_app/feature/ui/components/automatize_header_menu.dart';
 import 'package:automatize_app/feature/ui/components/form_wrapper.dart';
 import 'package:automatize_app/feature/ui/components/radio_button/multiple_radio_option.dart';
@@ -11,6 +12,48 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
+class AddressControllers {
+  late final TextEditingController streetController = TextEditingController();
+  late final TextEditingController numberController = TextEditingController();
+  late final TextEditingController countyController = TextEditingController();
+  late final TextEditingController postalCodeController =
+      TextEditingController();
+  late final TextEditingController cityController = TextEditingController();
+  late final TextEditingController stateController = TextEditingController();
+
+  late final FocusNode streetNode = FocusNode();
+  late final FocusNode numberNode = FocusNode();
+  late final FocusNode countyNode = FocusNode();
+  late final FocusNode postalCodeNode = FocusNode();
+  late final FocusNode cityNode = FocusNode();
+  late final FocusNode stateNode = FocusNode();
+
+  void init({Address? address}) {
+    streetController.text = address?.street ?? '';
+    numberController.text = address?.number ?? '';
+    countyController.text = address?.county ?? '';
+    postalCodeController.text = address?.postalCode ?? '';
+    cityController.text = address?.city ?? '';
+    stateController.text = address?.state ?? '';
+  }
+
+  void dispose() {
+    streetController.dispose();
+    numberController.dispose();
+    countyController.dispose();
+    postalCodeController.dispose();
+    cityController.dispose();
+    stateController.dispose();
+
+    streetNode.dispose();
+    numberNode.dispose();
+    countyNode.dispose();
+    postalCodeNode.dispose();
+    cityNode.dispose();
+    stateNode.dispose();
+  }
+}
+
 class ClientPage extends StatefulWidget {
   const ClientPage({super.key});
 
@@ -19,12 +62,12 @@ class ClientPage extends StatefulWidget {
 }
 
 class _ClientPageState extends State<ClientPage> {
-  late final ValueNotifier<int> _addressCount;
+  late final ValueNotifier<List<AddressControllers>> _addressControllers;
   late final ValueNotifier<int> _phoneCount;
 
   @override
   void initState() {
-    _addressCount = ValueNotifier(1);
+    _addressControllers = ValueNotifier([AddressControllers()]);
     _phoneCount = ValueNotifier(1);
     super.initState();
   }
@@ -35,15 +78,34 @@ class _ClientPageState extends State<ClientPage> {
       padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
       child: Column(
         children: [
-          const AutomatizeHeaderMenu(label: 'Novo Cliente'),
+          AutomatizeHeaderMenu(
+            label: 'Novo Cliente',
+            onDone: () {
+              final address = _addressControllers.value
+                  .map(
+                    (controller) => Address(
+                      id: '',
+                      street: controller.streetController.text,
+                      number: controller.numberController.text,
+                      county: controller.countyController.text,
+                      postalCode: controller.postalCodeController.text,
+                      city: controller.cityController.text,
+                      state: controller.stateController.text,
+                    ),
+                  )
+                  .toList();
+
+              print(address);
+            },
+          ),
           Expanded(
             child: CustomScrollView(
               physics: const ClampingScrollPhysics(),
               slivers: [
                 const SliverToBoxAdapter(child: _PersonalForm()),
                 ValueListenableBuilder(
-                  valueListenable: _addressCount,
-                  builder: (context, count, child) {
+                  valueListenable: _addressControllers,
+                  builder: (context, controllers, child) {
                     return SliverPadding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       sliver: MultiSliver(
@@ -54,21 +116,28 @@ class _ClientPageState extends State<ClientPage> {
                             delegate: _SliverTitlePinned(
                               title: 'Endereço',
                               icon: Icons.location_on_outlined,
-                              minusVisibility: count > 1,
+                              minusVisibility: controllers.length > 1,
                               onMinusTap: () {
-                                _addressCount.value = _addressCount.value - 1;
+                                _addressControllers.value =
+                                    List.from(_addressControllers.value)
+                                      ..removeLast();
                               },
                               onPlusTap: () {
-                                _addressCount.value = _addressCount.value + 1;
+                                _addressControllers.value =
+                                    List.from(_addressControllers.value)
+                                      ..add(AddressControllers());
                               },
                             ),
                           ),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
-                                return _AddressForm(position: index + 1);
+                                return _AddressForm(
+                                  position: index + 1,
+                                  controller: controllers[index],
+                                );
                               },
-                              childCount: count,
+                              childCount: controllers.length,
                             ),
                           )
                         ],
@@ -119,7 +188,7 @@ class _ClientPageState extends State<ClientPage> {
 
   @override
   void dispose() {
-    _addressCount.dispose();
+    _addressControllers.dispose();
     _phoneCount.dispose();
     super.dispose();
   }
@@ -223,10 +292,12 @@ class _PersonalFormState extends State<_PersonalForm> {
 }
 
 class _AddressForm extends StatefulWidget {
+  final AddressControllers controller;
   final int position;
 
   const _AddressForm({
     super.key,
+    required this.controller,
     required this.position,
   });
 
@@ -235,21 +306,6 @@ class _AddressForm extends StatefulWidget {
 }
 
 class _AddressFormState extends State<_AddressForm> {
-  late final TextEditingController streetController = TextEditingController();
-  late final TextEditingController numberController = TextEditingController();
-  late final TextEditingController countyController = TextEditingController();
-  late final TextEditingController postalCodeController =
-      TextEditingController();
-  late final TextEditingController cityController = TextEditingController();
-  late final TextEditingController stateController = TextEditingController();
-
-  late final FocusNode streetNode = FocusNode();
-  late final FocusNode numberNode = FocusNode();
-  late final FocusNode countyNode = FocusNode();
-  late final FocusNode postalCodeNode = FocusNode();
-  late final FocusNode cityNode = FocusNode();
-  late final FocusNode stateNode = FocusNode();
-
   final _cepMaskFormatter = MaskTextInputFormatter(
       mask: '#####-###',
       filter: {"#": RegExp(r'[0-9]')},
@@ -296,8 +352,8 @@ class _AddressFormState extends State<_AddressForm> {
               children: [
                 Expanded(
                   child: AutomatizeTextFieldWithTitle(
-                    controller: streetController,
-                    focusNode: streetNode,
+                    controller: widget.controller.streetController,
+                    focusNode: widget.controller.streetNode,
                     label: "Rua #${widget.position}",
                   ),
                 ),
@@ -306,8 +362,8 @@ class _AddressFormState extends State<_AddressForm> {
                   child: SizedBox(
                     width: 150,
                     child: AutomatizeTextFieldWithTitle(
-                      controller: numberController,
-                      focusNode: numberNode,
+                      controller: widget.controller.numberController,
+                      focusNode: widget.controller.numberNode,
                       label: "Número",
                     ),
                   ),
@@ -320,8 +376,8 @@ class _AddressFormState extends State<_AddressForm> {
                 children: [
                   Expanded(
                     child: AutomatizeTextFieldWithTitle(
-                      controller: countyController,
-                      focusNode: countyNode,
+                      controller: widget.controller.countyController,
+                      focusNode: widget.controller.countyNode,
                       label: "Bairro",
                     ),
                   ),
@@ -330,8 +386,8 @@ class _AddressFormState extends State<_AddressForm> {
                     child: SizedBox(
                       width: 150,
                       child: AutomatizeTextFieldWithTitle(
-                        controller: postalCodeController,
-                        focusNode: postalCodeNode,
+                        controller: widget.controller.postalCodeController,
+                        focusNode: widget.controller.postalCodeNode,
                         label: "CEP",
                         hint: '12345-678',
                         inputFormatters: [_cepMaskFormatter],
@@ -345,8 +401,8 @@ class _AddressFormState extends State<_AddressForm> {
               children: [
                 Expanded(
                   child: AutomatizeTextFieldWithTitle(
-                    controller: cityController,
-                    focusNode: cityNode,
+                    controller: widget.controller.cityController,
+                    focusNode: widget.controller.cityNode,
                     label: "Cidade",
                   ),
                 ),
@@ -358,6 +414,9 @@ class _AddressFormState extends State<_AddressForm> {
                       hint: "Selecione um estado",
                       label: 'Estado',
                       items: statesList,
+                      onChanged: (state) {
+                        widget.controller.stateController.text = state ?? '';
+                      },
                     ),
                   ),
                 )
@@ -371,19 +430,7 @@ class _AddressFormState extends State<_AddressForm> {
 
   @override
   void dispose() {
-    streetController.dispose();
-    numberController.dispose();
-    countyController.dispose();
-    postalCodeController.dispose();
-    cityController.dispose();
-    stateController.dispose();
-
-    streetNode.dispose();
-    numberNode.dispose();
-    countyNode.dispose();
-    postalCodeNode.dispose();
-    cityNode.dispose();
-    stateNode.dispose();
+    widget.controller.dispose();
     super.dispose();
   }
 }

@@ -3,7 +3,9 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/services.dart';
 
 part 'text_field_with_title.dart';
+
 part 'dropdown_with_title.dart';
+
 part 'custom_field_with_title.dart';
 
 class AutomatizeTextField extends StatelessWidget {
@@ -16,6 +18,7 @@ class AutomatizeTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
   final String? hint;
+  final ValueChanged<String>? onChanged;
 
   const AutomatizeTextField({
     super.key,
@@ -28,6 +31,7 @@ class AutomatizeTextField extends StatelessWidget {
     this.textInputAction,
     this.inputFormatters,
     this.hint,
+    this.onChanged,
   });
 
   @override
@@ -41,6 +45,7 @@ class AutomatizeTextField extends StatelessWidget {
       onTapOutside: (_) {
         if (focusNode != null) focusNode!.unfocus();
       },
+      onChanged: onChanged,
       inputFormatters: inputFormatters,
       decoration: InputDecoration(
         prefixIcon: icon != null

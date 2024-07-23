@@ -9,6 +9,7 @@ class AutomatizeTextFieldWithTitle extends StatelessWidget {
   final TextInputAction textInputAction;
   final List<TextInputFormatter>? inputFormatters;
   final String? hint;
+  final ValueChanged<String>? onChanged;
 
   const AutomatizeTextFieldWithTitle({
     super.key,
@@ -20,6 +21,7 @@ class AutomatizeTextFieldWithTitle extends StatelessWidget {
     this.textInputAction = TextInputAction.next,
     this.inputFormatters,
     this.hint,
+    this.onChanged,
   });
 
   @override
@@ -34,6 +36,7 @@ class AutomatizeTextFieldWithTitle extends StatelessWidget {
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         hint: hint,
+        onChanged: onChanged,
       ),
     );
   }
