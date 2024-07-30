@@ -9,6 +9,7 @@ import 'package:automatize_app/feature/ui/components/form_wrapper.dart';
 import 'package:automatize_app/feature/ui/components/toggle_header.dart';
 import 'package:automatize_app/feature/ui/pages/clients_page.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 
@@ -223,7 +224,7 @@ class _TechnicalListState extends State<_TechnicalList> {
       },
       child: FilterChip(
         selected: false,
-        label: Text("Tecnico"),
+        label: Text(dotenv.env['API_KEY'] ?? ""),
         onSelected: (bool value) {},
       ),
     );
