@@ -9,7 +9,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class ClientsPage extends StatefulWidget {
-  const ClientsPage({super.key});
+  final bool hasAddButton;
+  final bool hasTitle;
+  final Function(dynamic client)? onClientPressed;
+
+  const ClientsPage({
+    super.key,
+    this.hasAddButton = true,
+    this.hasTitle = true,
+    this.onClientPressed,
+  });
 
   @override
   State<ClientsPage> createState() => _ClientsPageState();
@@ -36,7 +45,8 @@ class _ClientsPageState extends State<ClientsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!showMobileLayout) ...dividedHeader('Clientes'),
+          if (widget.hasTitle && !showMobileLayout)
+            ...dividedHeader('Clientes'),
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Row(
@@ -49,18 +59,20 @@ class _ClientsPageState extends State<ClientsPage> {
                     icon: Icons.search_rounded,
                   ),
                 ),
-                const SizedBox(width: 16),
-                showMobileLayout
-                    ? AutomatizeButton.square(
-                        onPressed: _onTapNewClient, icon: btnIcon)
-                    : AutomatizeButton.rectangle(
-                        onPressed: _onTapNewClient,
-                        icon: btnIcon,
-                        label: const Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: Text("Adicionar Cliente"),
-                        ),
-                      )
+                if (widget.hasAddButton) ...[
+                  const SizedBox(width: 16),
+                  showMobileLayout
+                      ? AutomatizeButton.square(
+                          onPressed: _onTapNewClient, icon: btnIcon)
+                      : AutomatizeButton.rectangle(
+                          onPressed: _onTapNewClient,
+                          icon: btnIcon,
+                          label: const Padding(
+                            padding: EdgeInsets.only(left: 8.0),
+                            child: Text("Adicionar Cliente"),
+                          ),
+                        )
+                ]
               ],
             ),
           ),
@@ -71,6 +83,10 @@ class _ClientsPageState extends State<ClientsPage> {
                 DataColumn2(label: Text('Endereço')),
               ],
               source: ClientDataTableSource(onTap: () {
+                if(widget.onClientPressed != null){
+                  widget.onClientPressed!("");
+                  return;
+                }
                 context.go(R.client);
               }),
             ),

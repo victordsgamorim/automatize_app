@@ -19,6 +19,8 @@ class AutomatizeTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final String? hint;
   final ValueChanged<String>? onChanged;
+  final bool multipleLines;
+  final bool readOnly;
 
   const AutomatizeTextField({
     super.key,
@@ -32,11 +34,16 @@ class AutomatizeTextField extends StatelessWidget {
     this.inputFormatters,
     this.hint,
     this.onChanged,
+    this.multipleLines = false,
+    this.readOnly = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      readOnly: readOnly,
+      minLines: multipleLines ? 1 : null,
+      maxLines: multipleLines ? null : 1,
       controller: controller,
       focusNode: focusNode,
       textInputAction: textInputAction,
@@ -62,6 +69,9 @@ class AutomatizeTextField extends StatelessWidget {
               )
             : null,
         hintText: hint,
+        fillColor: readOnly ? Colors.transparent : null,
+        border: readOnly ? InputBorder.none : null,
+        contentPadding: readOnly ? EdgeInsets.zero : null
       ),
     );
   }

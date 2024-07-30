@@ -84,7 +84,8 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
                 Expanded(
                   child: Center(
                       child: Padding(
-                    padding: EdgeInsets.all(_currentIndex == 1 || _currentIndex == 2 ? 0 : 16),
+                    padding: EdgeInsets.all(
+                        _currentIndex == 1 || _currentIndex == 2 ? 0 : 16),
                     child: widget.navigationShell,
                   )),
                 )
@@ -129,7 +130,10 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
           icon: FontAwesomeIcons.boxesStacked,
           onTap: () => _onTap(2)),
       MenuItem(
-          title: "Criar OS", icon: FontAwesomeIcons.circlePlus, onTap: () {}),
+        title: "Criar OS",
+        icon: FontAwesomeIcons.circlePlus,
+        onTap: () => _onTap(3),
+      ),
       MenuItem(
           title: "Configurações", icon: FontAwesomeIcons.gear, onTap: () {}),
     ];
@@ -140,7 +144,8 @@ MenuItem logoutMenu() {
   return MenuItem(title: "Sair", icon: Icons.logout_rounded, onTap: () {});
 }
 
-bool isMobile(BuildContext context) => MediaQuery.sizeOf(context).width <= tablet;
+bool isMobile(BuildContext context) =>
+    MediaQuery.sizeOf(context).width <= tablet;
 
 List<Widget> dividedHeader(String title) {
   return [

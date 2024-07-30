@@ -5,7 +5,7 @@ class R {
   static String client = '${RoutePath.clients}/${RoutePath.client}';
   static String products = RoutePath.products;
   static String product = '${RoutePath.products}/${RoutePath.product}';
-  static String newOS = RoutePath.newOS;
+  static String newInvoice = RoutePath.newInvoice;
   static String settings = RoutePath.settings;
 }
 
@@ -16,7 +16,7 @@ class RoutePath {
   static String client = 'client';
   static String products = '/products';
   static String product = 'product';
-  static String newOS = '/newOS';
+  static String newInvoice = '/newInvoice';
   static String settings = '/settings';
 }
 
@@ -26,6 +26,6 @@ class RouteName{
   static String client = 'Novo Cliente';
   static String products = 'Produtos';
   static String product = 'Novo Produto';
-  static String newOS = 'Novas OS';
+  static String newInvoice = 'Novas OS';
   static String settings = 'Configurações';
 }

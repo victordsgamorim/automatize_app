@@ -1,8 +1,9 @@
 import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/core/route/route_path.dart';
+import 'package:automatize_app/feature/ui/pages/client_page.dart';
 import 'package:automatize_app/feature/ui/pages/clients_page.dart';
 import 'package:automatize_app/feature/ui/pages/home_page.dart';
-import 'package:automatize_app/feature/ui/pages/client_page.dart';
+import 'package:automatize_app/feature/ui/pages/invoice_page.dart';
 import 'package:automatize_app/feature/ui/pages/product_page.dart';
 import 'package:automatize_app/feature/ui/pages/products_page.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
@@ -49,16 +50,24 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             NoTransitionGoRouter(
-              name: RouteName.products,
-              path: RoutePath.products,
-              child: (context, state) => const ProductsPage(),
-              routes: [
-                NoTransitionGoRouter(
-                  name: RouteName.product,
-                  path: RoutePath.product,
-                  child: (context, state) => const ProductPage(),
-                )
-              ]
+                name: RouteName.products,
+                path: RoutePath.products,
+                child: (context, state) => const ProductsPage(),
+                routes: [
+                  NoTransitionGoRouter(
+                    name: RouteName.product,
+                    path: RoutePath.product,
+                    child: (context, state) => const ProductPage(),
+                  )
+                ]),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            NoTransitionGoRouter(
+              name: RouteName.newInvoice,
+              path: RoutePath.newInvoice,
+              child: (context, state) => const InvoicePage(),
             ),
           ],
         ),

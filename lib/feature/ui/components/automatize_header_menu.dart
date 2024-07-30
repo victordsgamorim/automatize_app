@@ -9,12 +9,14 @@ class AutomatizeHeaderMenu extends StatefulWidget {
   final String label;
   final VoidCallback? onClose;
   final VoidCallback? onDone;
+  final Widget? leading;
 
   const AutomatizeHeaderMenu({
     super.key,
     required this.label,
     this.onDone,
     this.onClose,
+    this.leading,
   });
 
   @override
@@ -33,6 +35,7 @@ class _AutomatizeHeaderMenuState extends State<AutomatizeHeaderMenu> {
             child: Align(
                 alignment: Alignment.centerRight,
                 child: _actionButton(
+                  leading: widget.leading,
                   action: AutomatizeButton.square(
                     onPressed: () => _onClose(),
                     icon: const Icon(Icons.close_rounded, color: Colors.white),
@@ -71,11 +74,13 @@ class _AutomatizeHeaderMenuState extends State<AutomatizeHeaderMenu> {
     context.pop();
   }
 
-  Row _actionButton({Widget? action}) {
+  Row _actionButton({Widget? leading, Widget? action}) {
+    const padding = SizedBox(width: 8);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (action != null) ...[action, const SizedBox(width: 8)],
+        if (leading != null) ...[Expanded(child: leading), padding],
+        if (action != null) ...[action, padding],
         AutomatizeButton.square(
           onPressed: () => widget.onDone?.call(),
           icon: const Icon(Icons.done_rounded, color: Colors.white),
