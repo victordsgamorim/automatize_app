@@ -2,11 +2,11 @@ part of 'automatize_textfield.dart';
 
 class DropdownWithTitle extends StatefulWidget {
   final String? hint;
-  final String? initValue;
+  final StateType? initValue;
   final String label;
-  final List<String> items;
-  final ValueChanged<String?>? onChanged;
-  final FormFieldValidator<String>? validator;
+  final List<StateType> items;
+  final ValueChanged<StateType?>? onChanged;
+  final FormFieldValidator<StateType>? validator;
 
   const DropdownWithTitle({
     super.key,
@@ -23,7 +23,7 @@ class DropdownWithTitle extends StatefulWidget {
 }
 
 class _DropdownWithTitleState extends State<DropdownWithTitle> {
-  String? _selectedValue;
+  StateType? _selectedValue;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _DropdownWithTitleState extends State<DropdownWithTitle> {
   Widget build(BuildContext context) {
     return _CustomFieldWithTitle(
       label: widget.label,
-      field: DropdownButtonFormField2<String>(
+      field: DropdownButtonFormField2<StateType>(
         isExpanded: true,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -45,10 +45,10 @@ class _DropdownWithTitleState extends State<DropdownWithTitle> {
         ),
         hint: widget.hint != null ? Text(widget.hint!) : null,
         items: widget.items
-            .map((item) => DropdownMenuItem<String>(
+            .map((item) => DropdownMenuItem<StateType>(
                   value: item,
                   child: Text(
-                    item,
+                    item.name,
                     style: const TextStyle(
                       fontSize: 14,
                     ),

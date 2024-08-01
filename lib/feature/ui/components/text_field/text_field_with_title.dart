@@ -10,6 +10,7 @@ class AutomatizeTextFieldWithTitle extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final String? hint;
   final ValueChanged<String>? onChanged;
+  final FormFieldValidator<String>? validator;
 
   const AutomatizeTextFieldWithTitle({
     super.key,
@@ -22,6 +23,7 @@ class AutomatizeTextFieldWithTitle extends StatelessWidget {
     this.inputFormatters,
     this.hint,
     this.onChanged,
+    this.validator,
   });
 
   @override
@@ -37,6 +39,7 @@ class AutomatizeTextFieldWithTitle extends StatelessWidget {
         inputFormatters: inputFormatters,
         hint: hint,
         onChanged: onChanged,
+        validator: validator,
       ),
     );
   }

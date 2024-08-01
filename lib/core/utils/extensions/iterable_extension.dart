@@ -5,4 +5,12 @@ extension IterableExtensions<T> on Iterable<T> {
       yield convert(index++, element);
     }
   }
+
+  T? firstWhereOrNull(bool Function(T element) item) {
+    try {
+      return firstWhere(item);
+    } catch (e) {
+      return null;
+    }
+  }
 }

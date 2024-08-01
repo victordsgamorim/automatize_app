@@ -1,49 +1,97 @@
+import 'package:automatize_app/core/utils/extensions/iterable_extension.dart';
 import 'package:equatable/equatable.dart';
 
+enum StateType {
+  acre(name: "Acre", stateAbbreviation: "ac"),
+  alagoas(name: "Alagoas", stateAbbreviation: "al"),
+  amapa(name: "Amapá", stateAbbreviation: "ap"),
+  amazonas(name: "Amazonas", stateAbbreviation: "am"),
+  bahia(name: "Bahia", stateAbbreviation: "ba"),
+  ceara(name: "Ceará", stateAbbreviation: "ce"),
+  distritoFederal(name: "Distrito Federal", stateAbbreviation: "df"),
+  espiritoSanto(name: "Espírito Santo", stateAbbreviation: "es"),
+  goias(name: "Goiás", stateAbbreviation: "go"),
+  maranhao(name: "Maranhão", stateAbbreviation: "ma"),
+  matoGrosso(name: "Mato Grosso", stateAbbreviation: "mt"),
+  matoGrossoSul(name: "Mato Grosso do Sul", stateAbbreviation: "ms"),
+  minasGerais(name: "Minas Gerais", stateAbbreviation: "mg"),
+  para(name: "Pará", stateAbbreviation: "pa"),
+  paraiba(name: "Paraíba", stateAbbreviation: "pb"),
+  parana(name: "Paraná", stateAbbreviation: "pr"),
+  pernambuco(name: "Pernambuco", stateAbbreviation: "pe"),
+  piaui(name: "Piauí", stateAbbreviation: "pi"),
+  rioJaneiro(name: "Rio de Janeiro", stateAbbreviation: "rj"),
+  rioGrandeNorte(name: "Rio Grande do Norte", stateAbbreviation: "rn"),
+  rioGrandeSul(name: "Rio Grande do Sul", stateAbbreviation: "rs"),
+  rondonia(name: "Rondônia", stateAbbreviation: "ro"),
+  roraima(name: "Roraima", stateAbbreviation: "rr"),
+  santaCatarina(name: "Santa Catarina", stateAbbreviation: "sc"),
+  saoPaulo(name: "São Paulo", stateAbbreviation: "sp"),
+  sergipe(name: "Sergipe", stateAbbreviation: "se"),
+  tocantins(name: "Tocantins", stateAbbreviation: "to");
+
+  final String name;
+  final String stateAbbreviation;
+
+  const StateType({required this.name, required this.stateAbbreviation});
+}
+
 class Address extends Equatable {
-  final String id;
+  final String? id;
   final String street;
   final String number;
-  final String county;
+  final String area;
   final String postalCode;
   final String city;
-  final String state;
+  final StateType state;
 
   const Address({
-    required this.id,
+    this.id,
     required this.street,
     required this.number,
-    required this.county,
     required this.postalCode,
     required this.city,
+    required this.area,
     required this.state,
   });
 
-  factory Address.empty() {
-    return const Address(
-      id: '',
-      street: '',
-      number: '',
-      county: '',
-      postalCode: '',
-      city: '',
-      state: '',
+  factory Address.fromMap(Map<String, dynamic> map) {
+    return Address(
+      id: map['id'],
+      street: map['street'],
+      number: map['number'],
+      postalCode: map['postal_code'],
+      city: map['city'],
+      area: map['area'],
+      state: StateType.values.firstWhereOrNull(
+              (type) => type.stateAbbreviation == map['state']) ??
+          StateType.pernambuco,
     );
   }
 
-  Address copyWith({String? street}) {
-    return Address(
-      id: '',
-      street: street ?? this.street,
-      number: '',
-      county: '',
-      postalCode: '',
-      city: '',
-      state: '',
-    );
+  String get toSingleLine =>
+      '$street - n°: $number - $area - $city - ${state.name} - $postalCode';
+
+  Map<String, dynamic> toMap(String clientId){
+    return {
+      "street": street,
+      "number": number,
+      "area": area,
+      "city": city,
+      "state": state.stateAbbreviation,
+      "postal_code": postalCode,
+      "client_id": clientId,
+    };
   }
 
   @override
-  List<Object?> get props =>
-      [id, street, number, county, postalCode, city, state];
+  List<Object?> get props => [
+        id,
+        street,
+        number,
+        area,
+        postalCode,
+        city,
+        state,
+      ];
 }

@@ -125,35 +125,35 @@ class _ClientFormState extends State<_ClientForm> {
   }
 
   void _onAddClient() {
-    if (!_clientAdded) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: SizedBox(
-                width: 500,
-                child: ClientsPage(
-                  hasAddButton: false,
-                  hasTitle: false,
-                  onClientPressed: (client) {
-                    context.pop();
-                    setState(() {
-                      _clientAdded = !_clientAdded;
-                    });
-                  },
-                ),
-              ),
-              actions: [
-                AutomatizeButton.rectangle(
-                  onPressed: context.pop,
-                  label: const Text("Sair"),
-                )
-              ],
-            );
-          });
-
-      return;
-    }
+    // if (!_clientAdded) {
+    //   showDialog(
+    //       context: context,
+    //       builder: (context) {
+    //         return AlertDialog(
+    //           content: SizedBox(
+    //             width: 500,
+    //             child: ClientsPage(
+    //               hasAddButton: false,
+    //               hasTitle: false,
+    //               onClientPressed: (client) {
+    //                 context.pop();
+    //                 setState(() {
+    //                   _clientAdded = !_clientAdded;
+    //                 });
+    //               },
+    //             ),
+    //           ),
+    //           actions: [
+    //             AutomatizeButton.rectangle(
+    //               onPressed: context.pop,
+    //               label: const Text("Sair"),
+    //             )
+    //           ],
+    //         );
+    //       });
+    //
+    //   return;
+    // }
 
     setState(() {
       _clientAdded = !_clientAdded;
@@ -224,7 +224,7 @@ class _TechnicalListState extends State<_TechnicalList> {
       },
       child: FilterChip(
         selected: false,
-        label: Text(dotenv.env['API_KEY'] ?? ""),
+        label: Text(""),
         onSelected: (bool value) {},
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:automatize_app/common_libs.dart';
+import 'package:automatize_app/feature/model/client.dart';
 import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:automatize_app/feature/ui/components/automatize_date_time_picker.dart';
 import 'package:automatize_app/feature/ui/components/automatize_header.dart';
@@ -8,6 +9,7 @@ import 'package:automatize_app/feature/ui/components/radio_button/radio_item.dar
 import 'package:automatize_app/feature/ui/components/table/paginated_table.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    name();
     final isTablet = width > tablet;
     final logoutItem = logoutMenu();
     return LayoutBuilder(builder: (context, constraints) {
@@ -95,6 +98,11 @@ class _HomePageState extends State<HomePage> {
         ],
       );
     });
+  }
+
+  Future<void> name() async {
+    final response =
+        await Supabase.instance.client.from("clients").select('*, addresses(*)');
   }
 
   @override
