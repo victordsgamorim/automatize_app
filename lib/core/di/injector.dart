@@ -1,7 +1,5 @@
 import 'package:automatize_app/core/database/app_database.dart';
-import 'package:automatize_app/core/database/dao/address_dao.dart';
 import 'package:automatize_app/core/database/dao/client_dao.dart';
-import 'package:automatize_app/core/database/dao/phone_dao.dart';
 import 'package:automatize_app/core/network/network_info.dart';
 import 'package:automatize_app/feature/data/datasource/local/client_local_datasource.dart';
 import 'package:automatize_app/feature/data/datasource/remote/client_remote_datasource.dart';

@@ -14,17 +14,11 @@ void _repositoryModule() {
 
 void _daoModule() {
   GetIt.I.registerLazySingleton<ClientDao>(() => ClientDao(GetIt.I()));
-  GetIt.I.registerLazySingleton<AddressDao>(() => AddressDao(GetIt.I()));
-  GetIt.I.registerLazySingleton<PhoneDao>(() => PhoneDao(GetIt.I()));
 }
 
 void _localModule() {
   GetIt.I.registerLazySingleton<ClientLocalDatasource>(
-      () => ClientLocalDatasourceImpl(
-            GetIt.I(),
-            GetIt.I(),
-            GetIt.I(),
-          ));
+      () => ClientLocalDatasourceImpl(GetIt.I()));
 }
 
 void _remoteModule() {

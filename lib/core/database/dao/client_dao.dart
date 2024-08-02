@@ -10,12 +10,40 @@ part 'client_dao.g.dart';
 class ClientDao extends DatabaseAccessor<AppDatabase> with _$ClientDaoMixin {
   ClientDao(super.attachedDatabase);
 
-  void insetBatch(List<ClientTableCompanion> clients) async {
-    await batch((batch) => batch.insertAll(
-          clientTable,
-          clients,
-          mode: InsertMode.replace,
-        ));
+  void insetBatch(List<Client> clients) async {
+    await batch((batch) {
+      List<ClientTableCompanion> clientTableCompanion = [];
+      late List<AddressTableCompanion> addressTableCompanion;
+      late List<PhoneTableCompanion> phoneTableCompanion;
+      for (var client in clients) {
+        clientTableCompanion.add(client.toTable());
+        addressTableCompanion = client.addresses
+            .map<AddressTableCompanion>((address) => address.toTable(client.id))
+            .toList();
+
+        phoneTableCompanion = client.phones
+            .map<PhoneTableCompanion>((phone) => phone.toTable(client.id))
+            .toList();
+      }
+
+      batch.insertAll(
+        clientTable,
+        clientTableCompanion,
+        mode: InsertMode.replace,
+      );
+
+      batch.insertAll(
+        addressTable,
+        addressTableCompanion,
+        mode: InsertMode.replace,
+      );
+
+      batch.insertAll(
+        phoneTable,
+        phoneTableCompanion,
+        mode: InsertMode.replace,
+      );
+    });
   }
 
   Future<List<Client>> getAll() async {
