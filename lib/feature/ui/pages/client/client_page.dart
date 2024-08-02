@@ -82,7 +82,7 @@ class _ClientPageState extends State<_ClientPage> {
       child: Column(
         children: [
           AutomatizeHeaderMenu(
-            label: 'Novo Cliente',
+            label: widget.client?.name ?? 'Novo Cliente',
             onDone: () {
               final isValid = _formKey.currentState?.validate();
               if (!isValid!) return;

@@ -26,13 +26,16 @@ class _AutomatizeHeaderMenuState extends State<AutomatizeHeaderMenu> {
   Widget build(BuildContext context) {
     final showMobileLayout = isMobile(context);
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         if (!showMobileLayout) ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Stack(
+            alignment: Alignment.bottomLeft,
             children: [
-              Row(children: [
+              Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                 IconButton(
                     onPressed: context.pop,
                     icon: Icon(
@@ -41,7 +44,9 @@ class _AutomatizeHeaderMenuState extends State<AutomatizeHeaderMenu> {
                     )),
                 AutomatizeHeader(label: widget.label),
               ]),
-              _actionButton()
+              Align(
+                  alignment: Alignment.centerRight,
+                  child: _actionButton())
             ],
           ),
           const AutomatizeDivider()

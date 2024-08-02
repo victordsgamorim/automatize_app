@@ -168,7 +168,7 @@ class ClientDataTableSource extends DataTableSource {
       ),
       onTap: () => onTap(client),
       cells: [
-        DataCell(Text(client.name), showEditIcon: true),
+        DataCell(Text(client.name)),
         DataCell(Text(client.addresses.isNotEmpty
             ? client.addresses[0].toSingleLine
             : '')),

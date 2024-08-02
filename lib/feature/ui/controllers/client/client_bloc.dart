@@ -8,6 +8,7 @@ import 'package:meta/meta.dart';
 import '../../../model/client.dart';
 
 part 'client_event.dart';
+
 part 'client_state.dart';
 
 class ClientBloc extends Bloc<ClientEvent, ClientState> {
@@ -24,16 +25,17 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
 
   FutureOr<void> _watchClients(event, emit) async {
     emit(const ClientLoaded(clients: [], isLoading: true));
-    final response = await _repository.getAll();
-    response.fold(
-      (failure) => emit(ClientLoaded(message: failure.message, clients: [])),
-      (clients) {
-        emit(ClientLoaded(clients: clients));
-      },
-    );
+    await emit.forEach(_repository.watchAll(), onData: (clients) {
+      return ClientLoaded(clients: clients);
+    }).catchError((error) => emit(ClientLoaded(
+          message: error,
+          clients: const [],
+        )));
   }
 
-  FutureOr<void> _create(event, emit) {}
+  FutureOr<void> _create(event, emit) {
+    _repository.insert(event.client);
+  }
 
   FutureOr<void> _update(event, emit) {}
 

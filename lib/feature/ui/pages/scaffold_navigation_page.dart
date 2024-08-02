@@ -1,3 +1,5 @@
+import 'package:automatize_app/core/route/route_path.dart';
+import 'package:automatize_app/feature/model/client.dart';
 import 'package:automatize_app/feature/ui/components/automatize_divider.dart';
 import 'package:automatize_app/feature/ui/components/automatize_header.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu.dart';
@@ -30,6 +32,9 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final showMobileLayout = isMobile(context);
+
+
+
     return ResponsiveScaledBox(
       width: ResponsiveValue<double>(context,
           defaultValue: width,
@@ -43,7 +48,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
           appBar: showMobileLayout
               ? AppBar(
                   centerTitle: false,
-                  title: Text(widget.state.topRoute?.name ?? ""),
+                  title: Text(_appBarTitle()),
                   backgroundColor: context.colorScheme.onPrimary,
                 )
               : null,
@@ -98,6 +103,13 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
     );
   }
 
+  String _appBarTitle() {
+    if(widget.state.topRoute?.name == RouteName.client && widget.state.extra != null){
+      return (widget.state.extra as Client).name;
+    }
+    return widget.state.topRoute?.name ?? "";
+  }
+
   _onChanged(int index) {
     if (index == 5) return;
     _currentIndex = index;
@@ -106,6 +118,7 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
   void _onTap(int index) {
     final bool isSamePage = index == widget.navigationShell.currentIndex;
     if (isSamePage) return;
+
     widget.navigationShell.goBranch(index, initialLocation: isSamePage);
     if (isMobile(context)) {
       Future.delayed(const Duration(milliseconds: 85), () {

@@ -3,7 +3,7 @@ part of 'app_database.dart';
 class ClientTable extends Table {
   TextColumn get id => text().withLength(min: 11, max: 14)();
 
-  TextColumn get name => text().withLength(min: 11, max: 14)();
+  TextColumn get name => text()();
 
   TextColumn get type => text().withLength(min: 1, max: 1)();
 
