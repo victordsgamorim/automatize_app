@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:automatize_app/core/database/app_database.dart';
 import 'package:automatize_app/core/utils/extensions/iterable_extension.dart';
 import 'package:automatize_app/feature/model/address.dart';
 import 'package:automatize_app/feature/model/phone.dart';
+import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 
 enum ClientType {
@@ -30,28 +34,37 @@ class Client extends Equatable {
     required this.phones,
   });
 
-  factory Client.empty() {
-    return const Client(
-      id: '',
-      name: '',
-      type: ClientType.personal,
-      addresses: [],
-      phones: [],
-    );
-  }
-
   factory Client.fromMap(Map<String, dynamic> data) {
     return Client(
       id: data['id'],
       name: data['name'],
       type: ClientType.values
-              .firstWhereOrNull((type) => type.type == data['type']) ??
+          .firstWhereOrNull((type) => type.type == data['type']) ??
           ClientType.personal,
       addresses: data['addresses']
           .map<Address>((address) => Address.fromMap(address))
           .toList(),
       phones:
-          data['phones'].map<Phone>((phone) => Phone.fromMap(phone)).toList(),
+      data['phones'].map<Phone>((phone) => Phone.fromMap(phone)).toList(),
+    );
+  }
+
+  factory Client.fromTable(ClientTableData table) {
+    return Client(
+        id: table.id,
+        name: table.name,
+        type: ClientType.values
+            .firstWhereOrNull((type) => type.type == table.type) ??
+            ClientType.personal,
+        addresses: [],
+        phones: []);
+  }
+
+  ClientTableCompanion toTable() {
+    return ClientTableCompanion(
+      id: Value(id),
+      name: Value(name),
+      type: Value(type.type),
     );
   }
 
@@ -59,8 +72,21 @@ class Client extends Equatable {
     return {
       "id": id,
       "name": name,
-      "type": type.type
+      "type": type.type,
     };
+  }
+
+  Client copyWith({
+    List<Address>? addresses,
+    List<Phone>? phones,
+  }) {
+    return Client(
+      id: id,
+      name: name,
+      type: type,
+      addresses: addresses ?? this.addresses,
+      phones: phones ?? this.phones,
+    );
   }
 
   @override

@@ -1,38 +1,22 @@
-part of 'client_cubit.dart';
+part of 'client_bloc.dart';
 
 @immutable
 sealed class ClientState {
+  final bool isLoading;
   final List<Client> clients;
+  final String? message;
 
-  const ClientState({required this.clients});
-}
-
-final class ClientEmpty extends ClientState with EquatableMixin {
-  const ClientEmpty() : super(clients: const []);
-
-  @override
-  List<Object?> get props => [clients];
-}
-
-final class ClientLoading extends ClientState with EquatableMixin {
-  const ClientLoading({required super.clients});
-
-  @override
-  List<Object?> get props => [clients];
-}
-
-final class ClientSuccess extends ClientState {
-  const ClientSuccess({required super.clients});
-}
-
-final class ClientError extends ClientState with EquatableMixin {
-  final String message;
-
-  const ClientError({
-    required this.message,
-    required super.clients,
+  const ClientState({
+    required this.clients,
+    this.isLoading = false,
+    this.message,
   });
+}
 
-  @override
-  List<Object?> get props => [message, clients];
+final class ClientEmpty extends ClientState {
+  const ClientEmpty() : super(clients: const []);
+}
+
+final class ClientLoaded extends ClientState {
+  const ClientLoaded({required super.clients, super.isLoading, super.message});
 }

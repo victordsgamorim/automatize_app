@@ -6,12 +6,14 @@ class MultipleRadioOption extends StatefulWidget {
   final int value;
   final List<RadioItem> items;
   final Function(int value) onChanged;
+  final bool enabled;
 
   const MultipleRadioOption({
     super.key,
     required this.value,
     required this.items,
     required this.onChanged,
+    this.enabled = false,
   }) : assert(value >= 0 && value < items.length);
 
   @override
@@ -31,26 +33,32 @@ class _MultipleRadioOptionState extends State<MultipleRadioOption> {
   Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(splashFactory: NoSplash.splashFactory),
-      child: Row(
-          children: widget.items.mapIndexed((index, item) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          child: RadioMenuButton<int>(
-            value: index,
-            groupValue: _chosenRadio,
-            onFocusChange: (_) => FocusScope.of(context).unfocus(),
-            onChanged: onTap,
-            child: Text(
-              item.label,
-              style: TextStyle(color: context.colorScheme.primary),
-            ),
-          ),
-        );
-      }).toList()),
+      child: AbsorbPointer(
+        absorbing: widget.enabled,
+        child: Opacity(
+          opacity: widget.enabled ? .5 : 1,
+          child: Row(
+              children: widget.items.mapIndexed((index, item) {
+            return ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              child: RadioMenuButton<int>(
+                value: index,
+                groupValue: _chosenRadio,
+                onFocusChange: (_) => FocusScope.of(context).unfocus(),
+                onChanged: onTap,
+                child: Text(
+                  item.label,
+                  style: TextStyle(color: context.colorScheme.primary),
+                ),
+              ),
+            );
+          }).toList()),
+        ),
+      ),
     );
   }
 
-  void onTap(int? value) {
+  onTap(int? value) {
     setState(() => _chosenRadio = value!);
     widget.onChanged(_chosenRadio);
   }

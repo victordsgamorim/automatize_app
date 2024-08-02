@@ -54,5 +54,9 @@ class $AssetsFontsGen {
 class Assets {
   Assets._();
 
+  static const String aEnv = '.env';
   static const $AssetsFontsGen fonts = $AssetsFontsGen();
+
+  /// List of all assets
+  static List<String> get values => [aEnv];
 }

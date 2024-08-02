@@ -1,6 +1,7 @@
 import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/core/route/route_path.dart';
-import 'package:automatize_app/feature/ui/pages/client_page.dart';
+import 'package:automatize_app/feature/model/client.dart';
+import 'package:automatize_app/feature/ui/pages/client/client_page.dart';
 import 'package:automatize_app/feature/ui/pages/clients_page.dart';
 import 'package:automatize_app/feature/ui/pages/home_page.dart';
 import 'package:automatize_app/feature/ui/pages/invoice_page.dart';
@@ -36,12 +37,16 @@ final router = GoRouter(
             NoTransitionGoRouter(
               name: RouteName.clients,
               path: RoutePath.clients,
-              child: (context, state) => const ClientsPage(),
+              child: (context, state) {
+                return const ClientsPage();
+              },
               routes: [
                 NoTransitionGoRouter(
                   name: RouteName.client,
                   path: RoutePath.client,
-                  child: (context, state) => const ClientPage(),
+                  child: (context, state) {
+                    return ClientPage(client: state.extra as Client?);
+                  },
                 )
               ],
             ),

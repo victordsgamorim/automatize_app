@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 
 class AutomatizeHeaderMenu extends StatefulWidget {
   final String label;
-  final VoidCallback? onClose;
   final VoidCallback? onDone;
   final Widget? leading;
 
@@ -15,7 +14,6 @@ class AutomatizeHeaderMenu extends StatefulWidget {
     super.key,
     required this.label,
     this.onDone,
-    this.onClose,
     this.leading,
   });
 
@@ -29,37 +27,20 @@ class _AutomatizeHeaderMenuState extends State<AutomatizeHeaderMenu> {
     final showMobileLayout = isMobile(context);
     return Column(
       children: [
-        if (showMobileLayout)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Align(
-                alignment: Alignment.centerRight,
-                child: _actionButton(
-                  leading: widget.leading,
-                  action: AutomatizeButton.square(
-                    onPressed: () => _onClose(),
-                    icon: const Icon(Icons.close_rounded, color: Colors.white),
-                    color: Colors.redAccent,
-                  ),
-                )),
-          ),
         if (!showMobileLayout) ...[
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () => _onClose(),
-                      icon: Icon(
-                        Icons.arrow_back_rounded,
-                        color: context.colorScheme.primary,
-                      )),
-                  const SizedBox(width: 8),
-                  AutomatizeHeader(label: widget.label),
-                ],
-              ),
+              Row(children: [
+                IconButton(
+                    onPressed: context.pop,
+                    icon: Icon(
+                      Icons.arrow_back_rounded,
+                      color: context.colorScheme.primary,
+                    )),
+                AutomatizeHeader(label: widget.label),
+              ]),
               _actionButton()
             ],
           ),
@@ -67,11 +48,6 @@ class _AutomatizeHeaderMenuState extends State<AutomatizeHeaderMenu> {
         ],
       ],
     );
-  }
-
-  void _onClose() {
-    widget.onClose?.call();
-    context.pop();
   }
 
   Row _actionButton({Widget? leading, Widget? action}) {

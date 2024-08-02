@@ -4,7 +4,7 @@ import 'package:automatize_app/feature/model/client.dart';
 import 'package:automatize_app/feature/ui/components/automatize_button.dart';
 import 'package:automatize_app/feature/ui/components/table/paginated_table.dart';
 import 'package:automatize_app/feature/ui/components/text_field/automatize_textfield.dart';
-import 'package:automatize_app/feature/ui/controllers/client/client_cubit.dart';
+import 'package:automatize_app/feature/ui/controllers/client/client_bloc.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +18,7 @@ class ClientsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GetIt.I<ClientCubit>(),
+      create: (context) => GetIt.I<ClientBloc>(),
       child: const _ClientsPage(),
     );
   }
@@ -41,13 +41,13 @@ class _ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<_ClientsPage> {
-  late final ClientCubit _cubit;
+  late final ClientBloc _bloc;
   late final TextEditingController _searchController;
   late final FocusNode _searchNode;
 
   @override
   void initState() {
-    _cubit = context.bloc<ClientCubit>()..load();
+    _bloc = context.bloc<ClientBloc>()..add(const WatchAllClientsEvent());
     _searchController = TextEditingController();
     _searchNode = FocusNode();
     super.initState();
@@ -95,25 +95,30 @@ class _ClientsPageState extends State<_ClientsPage> {
             ),
           ),
           Expanded(
-            child: BlocBuilder<ClientCubit, ClientState>(
+            child: BlocBuilder<ClientBloc, ClientState>(
               builder: (context, state) {
-                if (state is ClientLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return PaginatedTable(
-                  columns: const [
-                    DataColumn2(label: Text('Cliente')),
-                    DataColumn2(label: Text('Endereço')),
+                return Stack(
+                  children: [
+                    PaginatedTable(
+                      columns: const [
+                        DataColumn2(label: Text('Cliente')),
+                        DataColumn2(label: Text('Endereço')),
+                      ],
+                      source: ClientDataTableSource(
+                        onTap: (client) {
+                          if (widget.onClientPressed != null) {
+                            widget.onClientPressed!("");
+                            return;
+                          }
+
+                          context.go(R.client, extra: client);
+                        },
+                        clients: state.clients,
+                      ),
+                    ),
+                    if (state.isLoading)
+                      const Center(child: CircularProgressIndicator())
                   ],
-                  source: ClientDataTableSource(
-                      onTap: () {
-                        if (widget.onClientPressed != null) {
-                          widget.onClientPressed!("");
-                          return;
-                        }
-                        context.go(R.client);
-                      },
-                      clients: state.clients),
                 );
               },
             ),
@@ -129,6 +134,7 @@ class _ClientsPageState extends State<_ClientsPage> {
 
   @override
   void dispose() {
+    _bloc.close();
     _searchController.dispose();
     _searchNode.dispose();
     super.dispose();
@@ -136,7 +142,7 @@ class _ClientsPageState extends State<_ClientsPage> {
 }
 
 class ClientDataTableSource extends DataTableSource {
-  final VoidCallback onTap;
+  final Function(Client client) onTap;
   final List<Client> clients;
 
   ClientDataTableSource({
@@ -160,7 +166,7 @@ class ClientDataTableSource extends DataTableSource {
           bottomRight: isRounded,
         ),
       ),
-      onTap: onTap,
+      onTap: () => onTap(client),
       cells: [
         DataCell(Text(client.name), showEditIcon: true),
         DataCell(Text(client.addresses.isNotEmpty

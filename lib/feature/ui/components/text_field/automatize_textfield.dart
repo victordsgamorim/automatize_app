@@ -4,7 +4,9 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/services.dart';
 
 part 'custom_field_with_title.dart';
+
 part 'dropdown_with_title.dart';
+
 part 'text_field_with_title.dart';
 
 class AutomatizeTextField extends StatelessWidget {
@@ -21,6 +23,7 @@ class AutomatizeTextField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
   final bool multipleLines;
   final bool readOnly;
+  final String? initValue;
 
   const AutomatizeTextField({
     super.key,
@@ -36,12 +39,13 @@ class AutomatizeTextField extends StatelessWidget {
     this.onChanged,
     this.multipleLines = false,
     this.readOnly = false,
-    this.validator,
+    this.validator, this.initValue,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      initialValue:initValue,
       readOnly: readOnly,
       minLines: multipleLines ? 1 : null,
       maxLines: multipleLines ? null : 1,
@@ -57,23 +61,23 @@ class AutomatizeTextField extends StatelessWidget {
       validator: validator,
       inputFormatters: inputFormatters,
       decoration: InputDecoration(
-          prefixIcon: icon != null
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Icon(icon!),
-                )
-              : null,
-          label: label != null
-              ? Text(
-                  label!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
-              : null,
-          hintText: hint,
-          fillColor: readOnly ? Colors.transparent : null,
-          border: readOnly ? InputBorder.none : null,
-          contentPadding: readOnly ? EdgeInsets.zero : null),
+        prefixIcon: icon != null
+            ? Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Icon(icon!),
+        )
+            : null,
+        label: label != null
+            ? Text(
+          label!,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        )
+            : null,
+        hintText: hint,
+        fillColor: readOnly ? Colors.transparent : null,
+        border: readOnly ? InputBorder.none : null,
+      ),
     );
   }
 }

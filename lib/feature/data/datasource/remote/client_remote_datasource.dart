@@ -6,6 +6,8 @@ abstract interface class ClientRemoteDatasource {
   Future<List<Client>> getAll();
 
   Future<Client> insert(Client client);
+
+  Future<Client> update(Client client);
 }
 
 final class ClientRemoteDatasourceImpl implements ClientRemoteDatasource {
@@ -37,6 +39,36 @@ final class ClientRemoteDatasourceImpl implements ClientRemoteDatasource {
       final phonesResponse = await _client
           .from("phones")
           .insert(client.phones.map((phone) => phone.toMap(client.id)).toList())
+          .select();
+
+      clientResponse
+        ..putIfAbsent("addresses", () => addressResponse)
+        ..putIfAbsent("phones", () => phonesResponse);
+
+      return Client.fromMap(clientResponse);
+    } on PostgrestException catch (e) {
+      throw const ServerFailure(message: "Server Error");
+    }
+  }
+
+  @override
+  Future<Client> update(Client client) async {
+    try {
+      final clientResponse = await _client
+          .from("clients")
+          .update(client.toMap())
+          .eq("id", client.id)
+          .select()
+          .single();
+      final addressResponse = await _client
+          .from("addresses")
+          .upsert(client.addresses
+              .map((address) => address.toMap(client.id))
+              .toList())
+          .select();
+      final phonesResponse = await _client
+          .from("phones")
+          .upsert(client.phones.map((phone) => phone.toMap(client.id)).toList())
           .select();
 
       clientResponse

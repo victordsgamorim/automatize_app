@@ -1,4 +1,6 @@
+import 'package:automatize_app/core/database/app_database.dart';
 import 'package:automatize_app/core/utils/extensions/iterable_extension.dart';
+import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 
 enum StateType {
@@ -55,6 +57,20 @@ class Address extends Equatable {
     required this.state,
   });
 
+  factory Address.fromTable(AddressTableData table) {
+    return Address(
+      id: table.id,
+      street: table.street,
+      number: table.number,
+      postalCode: table.postalCode,
+      city: table.city,
+      area: table.area,
+      state: StateType.values.firstWhereOrNull(
+              (type) => type.stateAbbreviation == table.state) ??
+          StateType.pernambuco,
+    );
+  }
+
   factory Address.fromMap(Map<String, dynamic> map) {
     return Address(
       id: map['id'],
@@ -72,7 +88,20 @@ class Address extends Equatable {
   String get toSingleLine =>
       '$street - n°: $number - $area - $city - ${state.name} - $postalCode';
 
-  Map<String, dynamic> toMap(String clientId){
+  AddressTableCompanion toTable(String clientId) {
+    return AddressTableCompanion(
+      id: Value(id!),
+      street: Value(street),
+      number: Value(number),
+      city: Value(city),
+      postalCode: Value(postalCode),
+      area: Value(area),
+      state: Value(state.stateAbbreviation),
+      clientId: Value(clientId),
+    );
+  }
+
+  Map<String, dynamic> toMap(String clientId) {
     return {
       "street": street,
       "number": number,
