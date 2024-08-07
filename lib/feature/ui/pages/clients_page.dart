@@ -44,7 +44,7 @@ class _ClientsPageState extends State<_ClientsPage> {
   late final TextEditingController _searchController;
   late final FocusNode _searchNode;
 
-  Client? _selectedClient;
+  int? _selectedIndex;
 
   @override
   void initState() {
@@ -105,14 +105,15 @@ class _ClientsPageState extends State<_ClientsPage> {
                   EasyLoading.show(status: "Carregando...");
                 }
 
-                if(state is ClientError){
+                if (state is ClientError) {
                   EasyLoading.showError(state.message);
                 }
 
                 if (state is ClientSuccess) {
                   EasyLoading.dismiss().then((_) {
                     if (state.canProceed) {
-                      context.go(R.client, extra: _selectedClient);
+                      context.go(R.client,
+                          extra: state.clients[_selectedIndex!]);
                     }
                   });
                 }
@@ -154,7 +155,7 @@ class _ClientsPageState extends State<_ClientsPage> {
   }
 
   void _go({required Client client, required int index}) {
-    _selectedClient = client;
+    _selectedIndex = index;
     _clientBloc.add(GetByIdEvent(id: client.id, index: index));
   }
 

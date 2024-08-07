@@ -106,7 +106,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   }
 
   FutureOr<void> _deleteAddressById(event, emit) async {
-    // emit(ClientLoading(clients: state.clients));
+    emit(ClientLoading(clients: state.clients));
     final response = await _repository.deleteAddressById(
       clientId: event.client.id,
       addressId: event.addressId,
@@ -131,7 +131,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   }
 
   FutureOr<void> _deletePhoneById(event, emit) async {
-    // emit(ClientLoading(clients: state.clients));
+    emit(ClientLoading(clients: state.clients));
     final response = await _repository.deletePhoneById(
       clientId: event.client.id,
       phoneId: event.phoneId,

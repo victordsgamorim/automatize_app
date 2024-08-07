@@ -63,7 +63,7 @@ final class ClientRepositoryImpl implements ClientRepository {
   Future<Either<Failure, List<Client>>> getAll({String? search}) async {
     if (search == null) {
       final date = await _updateLocalDatasource.getUpdatedTime();
-      await syncDatabase(from: null);
+      await syncDatabase(from: date);
       await _updateLocalDatasource.setUpdatedTime(DateTime.now());
     }
 
@@ -76,11 +76,12 @@ final class ClientRepositoryImpl implements ClientRepository {
       if (await _networkInfo.isConnected) {
         final remoteData = await _clientRemoteDatasource.getClientById(id);
         if (remoteData != null) await _clientDao.insert(remoteData);
-        return Right(remoteData);
+        final localData = await _clientDao.getById(id);
+        return Right(localData);
       }
     } on TimeoutException {
       return const Left(ServerFailure(message: serverConnection));
-    } on PostgrestException catch (e) {
+    } on PostgrestException {
       return const Left(ServerFailure(message: notFound));
     }
 

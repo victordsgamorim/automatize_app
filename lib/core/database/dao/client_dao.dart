@@ -70,26 +70,54 @@ class ClientDao {
     )
   ''';
 
-  Future<List<Client>> getAll({String search = ''}) async {
-    final searchText = "%$search%";
-    const String addressId = "address_id";
-    const String phoneId = "phone_id";
-    final dbClients = await _db.rawQuery('''
-      SELECT 
+  static const _selectClient = '''
+  SELECT 
         c.$_clientId AS id,  c.$_name, c.$_clientType AS client_type, c.$_isClientActive AS client_active, c.$_updatedAt, 
-        a.$_addressId AS $addressId, a.$_street, a.$_addressNumber AS address_number, a.$_area, a.$_postalCode, a.$_city, a.$_state, a.$_isAddressActive AS address_active, a.$_foreignClientId AS address_client,
-        p.$_phoneId AS $phoneId, p.$_phoneNumber AS phone_number, p.$_phoneType AS phone_type, p.$_isPhoneActive AS phone_active, p.$_foreignClientId AS phone_client
+        a.$_addressId AS address_id, a.$_street, a.$_addressNumber AS address_number, a.$_area, a.$_postalCode, a.$_city, a.$_state, a.$_isAddressActive AS address_active, a.$_foreignClientId AS address_client,
+        p.$_phoneId AS phone_id, p.$_phoneNumber AS phone_number, p.$_phoneType AS phone_type, p.$_isPhoneActive AS phone_active, p.$_foreignClientId AS phone_client
       FROM $_clientTableName c
-      LEFT JOIN (
+  ''';
+
+  static const _joinAddress = '''
+  LEFT JOIN (
         SELECT * FROM $_addressTableName WHERE $_isAddressActive = 1
       ) a ON c.id = a.$_foreignClientId
-      LEFT JOIN (
+  ''';
+
+  static const _joinPhone = '''
+  LEFT JOIN (
         SELECT * FROM $_phonesTableName WHERE $_isPhoneActive = 1
       ) p ON c.id = p.$_foreignClientId
-    
+  ''';
+
+  Future<List<Client>> getAll({String search = ''}) async {
+    final searchText = "%$search%";
+    final dbClients = await _db.rawQuery('''
+      $_selectClient
+      $_joinAddress
+      $_joinPhone    
       WHERE c.$_isClientActive = 1 AND (c.$_name LIKE ? OR a.$_street LIKE ? OR a.$_city LIKE ? OR a.$_area LIKE ?)  
       ORDER BY c.$_name     
     ''', [searchText, searchText, searchText, searchText]);
+
+    return _decodeClientMap(dbClients);
+  }
+
+  Future<Client?> getById(String id) async {
+    final dbClients = await _db.rawQuery('''
+      $_selectClient
+      $_joinAddress
+      $_joinPhone
+      WHERE c.$_isClientActive = 1 AND c.$_clientId = ?
+    ''', [id]);
+
+    if (dbClients.isEmpty) return null;
+    return _decodeClientMap(dbClients).first;
+  }
+
+  List<Client> _decodeClientMap(List<Map<String, dynamic>> dbClients) {
+    const String addressId = "address_id";
+    const String phoneId = "phone_id";
 
     final Map<String, Client> clientsMap = {};
     final Map<String, Address> addressesMap = {};
