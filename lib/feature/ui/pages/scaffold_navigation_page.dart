@@ -5,13 +5,16 @@ import 'package:automatize_app/feature/ui/components/automatize_header.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu.dart';
 import 'package:automatize_app/feature/ui/components/menu/menu_item.dart';
 import 'package:automatize_app/feature/ui/components/menu/side_menu.dart';
+import 'package:automatize_app/feature/ui/controllers/client/client_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import '../../../common_libs.dart';
 
-class ScaffoldNavigationPage extends StatefulWidget {
+class ScaffoldNavigationPage extends StatelessWidget {
   final GoRouterState state;
   final StatefulNavigationShell navigationShell;
 
@@ -22,18 +25,39 @@ class ScaffoldNavigationPage extends StatefulWidget {
   });
 
   @override
-  State<ScaffoldNavigationPage> createState() => _ScaffoldNavigationPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => GetIt.I<ClientBloc>(),
+      child: _ScaffoldNavigationPage(
+        state: state,
+        navigationShell: navigationShell,
+      ),
+    );
+  }
 }
 
-class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
+class _ScaffoldNavigationPage extends StatefulWidget {
+  final GoRouterState state;
+  final StatefulNavigationShell navigationShell;
+
+  const _ScaffoldNavigationPage({
+    super.key,
+    required this.state,
+    required this.navigationShell,
+  });
+
+  @override
+  State<_ScaffoldNavigationPage> createState() =>
+      _ScaffoldNavigationPageState();
+}
+
+class _ScaffoldNavigationPageState extends State<_ScaffoldNavigationPage> {
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final showMobileLayout = isMobile(context);
-
-
 
     return ResponsiveScaledBox(
       width: ResponsiveValue<double>(context,
@@ -104,7 +128,8 @@ class _ScaffoldNavigationPageState extends State<ScaffoldNavigationPage> {
   }
 
   String _appBarTitle() {
-    if(widget.state.topRoute?.name == RouteName.client && widget.state.extra != null){
+    if (widget.state.topRoute?.name == RouteName.client &&
+        widget.state.extra != null) {
       return (widget.state.extra as Client).name;
     }
     return widget.state.topRoute?.name ?? "";

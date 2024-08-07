@@ -1,5 +1,16 @@
+const duplicatedCode = 23505;
+const nullValueCode = 23502;
+
 const String noConnection =
     "Algo está temporariamente errado com sua conexão de rede. Por favor, certifique-se de que você está conectado à internet.";
+
+const String serverConnection =
+    "A requisição ao servidor demorou muito para responder. Por favor, tente novamente mais tarde.";
+
+const String duplicatedClient = "Cliente já existe com o CPF: ";
+
+const String notFound = "Não foi possível encontrar o cliente.";
+const String nullValue = "Valor na coluna de id está vazio.";
 
 ///CLIENT FORM
 const nameFieldError = "Por favor, informe o nome.";

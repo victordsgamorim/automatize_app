@@ -2,6 +2,7 @@ part of 'client_page.dart';
 
 class PhoneFormControllers {
   final Phone? phone;
+  String? id;
   late final TextEditingController phoneController = TextEditingController();
   late final TextEditingController fixedController = TextEditingController();
   late final TextEditingController otherController = TextEditingController();
@@ -22,6 +23,7 @@ class PhoneFormControllers {
   PhoneType type = PhoneType.mobile;
 
   PhoneFormControllers({this.phone}) {
+    id = phone?.id;
     type = phone?.type ?? type;
     _initText();
   }

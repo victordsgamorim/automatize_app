@@ -16,10 +16,13 @@ import 'package:automatize_app/feature/ui/controllers/client/client_bloc.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+import 'package:uuid/uuid.dart';
 
 part 'address_form.dart';
 
@@ -27,30 +30,16 @@ part 'personal_form.dart';
 
 part 'phone_form.dart';
 
-class ClientPage extends StatelessWidget {
+class ClientPage extends StatefulWidget {
   final Client? client;
 
-  const ClientPage({super.key, required this.client});
+  const ClientPage({super.key, this.client});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: GetIt.I<ClientBloc>(),
-      child: _ClientPage(client: client),
-    );
-  }
+  State<ClientPage> createState() => _ClientPageState();
 }
 
-class _ClientPage extends StatefulWidget {
-  final Client? client;
-
-  const _ClientPage({super.key, this.client});
-
-  @override
-  State<_ClientPage> createState() => _ClientPageState();
-}
-
-class _ClientPageState extends State<_ClientPage> {
+class _ClientPageState extends State<ClientPage> {
   late final GlobalKey<FormState> _formKey = GlobalKey();
   late final ClientBloc _bloc;
 
@@ -77,42 +66,81 @@ class _ClientPageState extends State<_ClientPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
-      child: Column(
-        children: [
-          AutomatizeHeaderMenu(
-            label: widget.client?.name ?? 'Novo Cliente',
-            onDone: () {
-              final isValid = _formKey.currentState?.validate();
-              if (!isValid!) return;
-              _bloc.add(CreateClientEvent(_createClient()));
-            },
-          ),
-          Expanded(
-            child: Form(
-              key: _formKey,
-              child: CustomScrollView(
-                physics: const ClampingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: _PersonalForm(
-                      key: const Key("personalForm"),
-                      controllers: _personalFormControllers,
-                    ),
-                  ),
-                  _listenableAddressForm(),
-                  _listenablePhoneForm(),
-                ],
-              ),
+    return BlocListener<ClientBloc, ClientState>(
+      listener: (context, state) {
+        if (state is ClientLoading) {
+          EasyLoading.show(status: 'Carregando...');
+        }
+        if (state is ClientError) {
+          EasyLoading.showError(state.message, dismissOnTap: true);
+        }
+
+        if (state is ClientSuccess && state.canReturn) {
+          EasyLoading.showSuccess(
+                  "${_personalFormControllers.nameController.text} salvo com sucesso!",
+                  dismissOnTap: true)
+              .then(
+            (_) => context.pop(),
+          );
+        }
+
+        if (state is ClientSuccess && state.canReturn) {
+          EasyLoading.showSuccess(
+                  "${_personalFormControllers.nameController.text} salvo com sucesso!")
+              .then(
+            (_) => context.pop(),
+          );
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
+        child: Column(
+          children: [
+            AutomatizeHeaderMenu(
+              label: widget.client?.name ?? 'Novo Cliente',
+              onDone: () {
+                final isValid = _formKey.currentState?.validate();
+                if (!isValid!) {
+                  EasyLoading.showError(
+                    'Preencha os campos corretamente...',
+                    dismissOnTap: true,
+                  );
+                  return;
+                }
+
+                if (widget.client == null) {
+                  _bloc.add(CreateEvent(_createClient()));
+                } else {
+                  _bloc.add(UpdateEvent(_createClient()));
+                }
+              },
             ),
-          )
-        ],
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: CustomScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: _PersonalForm(
+                        key: const Key("personalForm"),
+                        controllers: _personalFormControllers,
+                      ),
+                    ),
+                    _listenableAddressForm(),
+                    _listenablePhoneForm(),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   Client _createClient() {
+    const uuid = Uuid();
     return Client(
       id: _personalFormControllers.id,
       name: _personalFormControllers.nameController.text,
@@ -120,6 +148,7 @@ class _ClientPageState extends State<_ClientPage> {
       addresses: _addressController.forms
           .map<Address>(
             (address) => Address(
+              id: address.id ?? uuid.v4(),
               street: address.streetController.text,
               number: address.numberController.text,
               postalCode: address.postalCode,
@@ -131,10 +160,12 @@ class _ClientPageState extends State<_ClientPage> {
           .toList(),
       phones: _phonesController.forms
           .map((phone) => Phone(
+                id: phone.id ?? uuid.v4(),
                 number: phone.phoneNumber,
                 type: phone.type,
               ))
           .toList(),
+      updatedAt: DateTime.now(),
     );
   }
 
@@ -243,7 +274,6 @@ class _ClientPageState extends State<_ClientPage> {
 
   @override
   void dispose() {
-    _bloc.close();
     _addressController.dispose();
     _phonesController.dispose();
     super.dispose();

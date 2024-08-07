@@ -1,6 +1,4 @@
-import 'package:automatize_app/core/database/app_database.dart';
 import 'package:automatize_app/core/utils/extensions/iterable_extension.dart';
-import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 
 enum PhoneType {
@@ -41,27 +39,32 @@ class Phone extends Equatable {
     );
   }
 
-  factory Phone.fromTable(PhoneTableData table) {
+  factory Phone.fromSQL(Map<String, dynamic> map) {
     return Phone(
-      id: table.id,
-      number: table.number,
+      id: map['phone_id'],
+      number: map['phone_number'],
       type: PhoneType.values
-              .firstWhereOrNull((type) => type.type == table.type) ??
+              .firstWhereOrNull((type) => type.type == map['phone_type']) ??
           PhoneType.mobile,
     );
   }
 
-  PhoneTableCompanion toTable(String clientId) {
-    return PhoneTableCompanion(
-      id: Value(id!),
-      number: Value(number),
-      type: Value(type.type),
-      clientId: Value(clientId),
-    );
+  Map<String, dynamic> toMap(String clientId) {
+    return {
+      "id": id,
+      "number": number,
+      "type": type.type,
+      "client_id": clientId
+    };
   }
 
-  Map<String, dynamic> toMap(String clientId) {
-    return {"number": number, "type": type.type, "client_id": clientId};
+  Map<String, dynamic> toSQL(String clientId) {
+    return {
+      "id": id,
+      "number": number,
+      "type": type.type,
+      "client_id": clientId,
+    };
   }
 
   @override

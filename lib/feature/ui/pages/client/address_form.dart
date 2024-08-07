@@ -2,6 +2,7 @@ part of 'client_page.dart';
 
 class AddressFormControllers {
   final Address? address;
+  String? id;
   late final TextEditingController streetController = TextEditingController();
   late final TextEditingController numberController = TextEditingController();
   late final TextEditingController areaController = TextEditingController();
@@ -25,6 +26,7 @@ class AddressFormControllers {
   StateType state = StateType.pernambuco;
 
   AddressFormControllers({this.address}) {
+    id = address?.id;
     streetController.text = address?.street ?? '';
     numberController.text = address?.number ?? '';
     areaController.text = address?.area ?? '';

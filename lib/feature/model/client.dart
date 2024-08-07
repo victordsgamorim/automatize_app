@@ -1,10 +1,6 @@
-import 'dart:typed_data';
-
-import 'package:automatize_app/core/database/app_database.dart';
 import 'package:automatize_app/core/utils/extensions/iterable_extension.dart';
 import 'package:automatize_app/feature/model/address.dart';
 import 'package:automatize_app/feature/model/phone.dart';
-import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 
 enum ClientType {
@@ -25,6 +21,8 @@ class Client extends Equatable {
   final ClientType type;
   final List<Address> addresses;
   final List<Phone> phones;
+  final bool isActive;
+  final DateTime updatedAt;
 
   const Client({
     required this.id,
@@ -32,40 +30,37 @@ class Client extends Equatable {
     required this.type,
     required this.addresses,
     required this.phones,
+    this.isActive = true,
+    required this.updatedAt,
   });
 
   factory Client.fromMap(Map<String, dynamic> data) {
     return Client(
-      id: data['id'],
-      name: data['name'],
-      type: ClientType.values
-          .firstWhereOrNull((type) => type.type == data['type']) ??
-          ClientType.personal,
-      addresses: data['addresses']
-          .map<Address>((address) => Address.fromMap(address))
-          .toList(),
-      phones:
-      data['phones'].map<Phone>((phone) => Phone.fromMap(phone)).toList(),
-    );
-  }
-
-  factory Client.fromTable(ClientTableData table) {
-    return Client(
-        id: table.id,
-        name: table.name,
+        id: data['id'],
+        name: data['name'],
         type: ClientType.values
-            .firstWhereOrNull((type) => type.type == table.type) ??
+                .firstWhereOrNull((type) => type.type == data['type']) ??
             ClientType.personal,
-        addresses: [],
-        phones: []);
+        addresses: data['addresses']
+            .map<Address>((address) => Address.fromMap(address))
+            .toList(),
+        phones:
+            data['phones'].map<Phone>((phone) => Phone.fromMap(phone)).toList(),
+        isActive: data['is_active'],
+        updatedAt: DateTime.parse(data['updated_at']));
   }
 
-  ClientTableCompanion toTable() {
-    return ClientTableCompanion(
-      id: Value(id),
-      name: Value(name),
-      type: Value(type.type),
-    );
+  factory Client.fromSQL(Map<String, dynamic> data) {
+    return Client(
+        id: data['id'],
+        name: data['name'],
+        type: ClientType.values
+                .firstWhereOrNull((type) => type.type == data['client_type']) ??
+            ClientType.personal,
+        addresses: const [],
+        phones: const [],
+        isActive: data['is_active'] == 1,
+        updatedAt: DateTime.parse(data['updated_at']));
   }
 
   Map<String, dynamic> toMap() {
@@ -73,12 +68,25 @@ class Client extends Equatable {
       "id": id,
       "name": name,
       "type": type.type,
+      "is_active": isActive,
+      "updated_at": DateTime.now().toIso8601String(),
+    };
+  }
+
+  Map<String, dynamic> toSQL() {
+    return {
+      "id": id,
+      "name": name,
+      "type": type.type,
+      "is_active": isActive ? 1 : 0,
+      "updated_at": DateTime.now().toIso8601String(),
     };
   }
 
   Client copyWith({
     List<Address>? addresses,
     List<Phone>? phones,
+    DateTime? updatedAt,
   }) {
     return Client(
       id: id,
@@ -86,9 +94,10 @@ class Client extends Equatable {
       type: type,
       addresses: addresses ?? this.addresses,
       phones: phones ?? this.phones,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, type, addresses, phones];
+  List<Object?> get props => [id];
 }

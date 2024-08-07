@@ -13,4 +13,24 @@ extension IterableExtensions<T> on Iterable<T> {
       return null;
     }
   }
+
+  int binarySearch(T item, int Function(T, T) compare) {
+    int low = 0;
+    int high = length;
+
+    List<T> list = toList(); // Convert Iterable to List
+
+    while (low < high) {
+      int mid = (low + high) ~/ 2;
+
+      if (compare(list[mid], item) < 0) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+
+    return low;
+  }
+
 }

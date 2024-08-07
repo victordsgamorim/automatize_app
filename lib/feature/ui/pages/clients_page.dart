@@ -2,25 +2,24 @@ import 'package:automatize_app/common_libs.dart';
 import 'package:automatize_app/core/route/route_path.dart';
 import 'package:automatize_app/feature/model/client.dart';
 import 'package:automatize_app/feature/ui/components/automatize_button.dart';
+import 'package:automatize_app/feature/ui/components/icon_menu.dart';
 import 'package:automatize_app/feature/ui/components/table/paginated_table.dart';
 import 'package:automatize_app/feature/ui/components/text_field/automatize_textfield.dart';
 import 'package:automatize_app/feature/ui/controllers/client/client_bloc.dart';
 import 'package:automatize_app/feature/ui/pages/scaffold_navigation_page.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
 class ClientsPage extends StatelessWidget {
   const ClientsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetIt.I<ClientBloc>(),
-      child: const _ClientsPage(),
-    );
+    return const _ClientsPage();
   }
 }
 
@@ -41,13 +40,15 @@ class _ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<_ClientsPage> {
-  late final ClientBloc _bloc;
+  late final ClientBloc _clientBloc;
   late final TextEditingController _searchController;
   late final FocusNode _searchNode;
 
+  Client? _selectedClient;
+
   @override
   void initState() {
-    _bloc = context.bloc<ClientBloc>()..add(const WatchAllClientsEvent());
+    _clientBloc = context.bloc<ClientBloc>()..add(const GetAllEvent());
     _searchController = TextEditingController();
     _searchNode = FocusNode();
     super.initState();
@@ -75,6 +76,9 @@ class _ClientsPageState extends State<_ClientsPage> {
                     focusNode: _searchNode,
                     label: "Buscar cliente...",
                     icon: Icons.search_rounded,
+                    onChanged: (text) {
+                      _clientBloc.add(SearchEvent(text));
+                    },
                   ),
                 ),
                 if (widget.hasAddButton) ...[
@@ -95,30 +99,51 @@ class _ClientsPageState extends State<_ClientsPage> {
             ),
           ),
           Expanded(
-            child: BlocBuilder<ClientBloc, ClientState>(
-              builder: (context, state) {
-                return Stack(
-                  children: [
-                    PaginatedTable(
-                      columns: const [
-                        DataColumn2(label: Text('Cliente')),
-                        DataColumn2(label: Text('Endereço')),
-                      ],
-                      source: ClientDataTableSource(
-                        onTap: (client) {
-                          if (widget.onClientPressed != null) {
-                            widget.onClientPressed!("");
-                            return;
-                          }
+            child: BlocConsumer<ClientBloc, ClientState>(
+              listener: (context, state) {
+                if (state is ClientLoading) {
+                  EasyLoading.show(status: "Carregando...");
+                }
 
-                          context.go(R.client, extra: client);
-                        },
-                        clients: state.clients,
-                      ),
-                    ),
-                    if (state.isLoading)
-                      const Center(child: CircularProgressIndicator())
+                if(state is ClientError){
+                  EasyLoading.showError(state.message);
+                }
+
+                if (state is ClientSuccess) {
+                  EasyLoading.dismiss().then((_) {
+                    if (state.canProceed) {
+                      context.go(R.client, extra: _selectedClient);
+                    }
+                  });
+                }
+              },
+              builder: (context, state) {
+                return PaginatedTable(
+                  columns: const [
+                    DataColumn2(label: Text('Cliente')),
+                    DataColumn2(label: Text('Endereço')),
                   ],
+                  source: ClientDataTableSource(
+                    onTap: (client, index) {
+                      if (widget.onClientPressed != null) {
+                        widget.onClientPressed!("");
+                        return;
+                      }
+                      _go(client: client, index: index);
+                    },
+                    onMenuTap: (client, menu, index) {
+                      if (menu == MenuType.delete) {
+                        _clientBloc.add(DeleteByIdEvent(
+                          id: client.id,
+                          index: index,
+                        ));
+                        return;
+                      }
+
+                      _go(client: client, index: index);
+                    },
+                    clients: state.clients,
+                  ),
                 );
               },
             ),
@@ -128,13 +153,17 @@ class _ClientsPageState extends State<_ClientsPage> {
     );
   }
 
+  void _go({required Client client, required int index}) {
+    _selectedClient = client;
+    _clientBloc.add(GetByIdEvent(id: client.id, index: index));
+  }
+
   void _onTapNewClient() {
     context.go(R.client);
   }
 
   @override
   void dispose() {
-    _bloc.close();
     _searchController.dispose();
     _searchNode.dispose();
     super.dispose();
@@ -142,12 +171,14 @@ class _ClientsPageState extends State<_ClientsPage> {
 }
 
 class ClientDataTableSource extends DataTableSource {
-  final Function(Client client) onTap;
+  final Function(Client client, int index) onTap;
   final List<Client> clients;
+  final Function(Client client, MenuType? menu, int index)? onMenuTap;
 
   ClientDataTableSource({
     required this.onTap,
     required this.clients,
+    this.onMenuTap,
   });
 
   @override
@@ -166,12 +197,23 @@ class ClientDataTableSource extends DataTableSource {
           bottomRight: isRounded,
         ),
       ),
-      onTap: () => onTap(client),
+      onTap: () => onTap(client, index),
       cells: [
         DataCell(Text(client.name)),
-        DataCell(Text(client.addresses.isNotEmpty
-            ? client.addresses[0].toSingleLine
-            : '')),
+        DataCell(Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Text(client.addresses.isNotEmpty
+                  ? client.addresses[0].toSingleLine
+                  : ''),
+            ),
+            IconMenu(
+              items: const [MenuType.open, MenuType.delete],
+              onTap: (menu) => onMenuTap?.call(client, menu, index),
+            )
+          ],
+        )),
       ],
     );
   }

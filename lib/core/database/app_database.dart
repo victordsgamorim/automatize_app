@@ -1,32 +1,17 @@
-import 'dart:io';
+import 'package:automatize_app/core/database/dao/client_dao.dart';
+import 'package:logger/logger.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
-import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
-
-part 'app_database.g.dart';
-part 'tables.dart';
-
-
-
-@DriftDatabase(tables: [ClientTable, AddressTable, PhoneTable])
-class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
-
-  @override
-  int get schemaVersion => 1;
-}
-
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File(path.join(dir.path, 'db.sqlite'));
-
-    if(Platform.isAndroid){
-      await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
-    }
-    return NativeDatabase.createInBackground(file);
-  });
+Future<Database> getDatabase() async {
+  final String path = join(await getDatabasesPath(), 'automatize.db');
+  return openDatabase(
+    path,
+    onCreate: (db, _) {
+      db.execute(ClientDao.clientTable);
+      db.execute(ClientDao.addressTable);
+      db.execute(ClientDao.phoneTable);
+    },
+    version: 1,
+  );
 }
