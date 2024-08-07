@@ -105,9 +105,55 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     );
   }
 
-  FutureOr<void> _deleteAddressById(event, emit) {}
+  FutureOr<void> _deleteAddressById(event, emit) async {
+    // emit(ClientLoading(clients: state.clients));
+    final response = await _repository.deleteAddressById(
+      clientId: event.client.id,
+      addressId: event.addressId,
+    );
 
-  FutureOr<void> _deletePhoneById(event, emit) {}
+    response.fold(
+      (failure) {
+        emit(ClientError(
+          message: failure.message,
+          clients: state.clients,
+        ));
+      },
+      (client) {
+        state.clients.remove(event.client);
+        int index = state.clients.binarySearch(
+          client,
+          (a, b) => a.name.compareTo(b.name),
+        );
+        emit(ClientSuccess(clients: state.clients..insert(index, client)));
+      },
+    );
+  }
+
+  FutureOr<void> _deletePhoneById(event, emit) async {
+    // emit(ClientLoading(clients: state.clients));
+    final response = await _repository.deletePhoneById(
+      clientId: event.client.id,
+      phoneId: event.phoneId,
+    );
+
+    response.fold(
+      (failure) {
+        emit(ClientError(
+          message: failure.message,
+          clients: state.clients,
+        ));
+      },
+      (client) {
+        state.clients.remove(event.client);
+        int index = state.clients.binarySearch(
+          client,
+          (a, b) => a.name.compareTo(b.name),
+        );
+        emit(ClientSuccess(clients: state.clients..insert(index, client)));
+      },
+    );
+  }
 
   FutureOr<void> _searchClient(event, emit) async {
     final response = await _repository.getAll(search: event.text);

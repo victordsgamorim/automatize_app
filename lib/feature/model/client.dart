@@ -59,7 +59,7 @@ class Client extends Equatable {
             ClientType.personal,
         addresses: const [],
         phones: const [],
-        isActive: data['is_active'] == 1,
+        isActive: data['client_active'] == 1,
         updatedAt: DateTime.parse(data['updated_at']));
   }
 

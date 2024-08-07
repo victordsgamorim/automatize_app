@@ -44,6 +44,7 @@ class Address extends Equatable {
   final String postalCode;
   final String city;
   final StateType state;
+  final bool isActive;
 
   const Address({
     this.id,
@@ -53,6 +54,7 @@ class Address extends Equatable {
     required this.city,
     required this.area,
     required this.state,
+    this.isActive = true,
   });
 
   factory Address.fromMap(Map<String, dynamic> map) {
@@ -66,6 +68,7 @@ class Address extends Equatable {
       state: StateType.values.firstWhereOrNull(
               (type) => type.stateAbbreviation == map['state']) ??
           StateType.pernambuco,
+      isActive: map['is_active'],
     );
   }
 
@@ -77,6 +80,7 @@ class Address extends Equatable {
       postalCode: map['postal_code'],
       city: map['city'],
       area: map['area'],
+      isActive: map['address_active'] == 1,
       state: StateType.values.firstWhereOrNull(
               (type) => type.stateAbbreviation == map['state']) ??
           StateType.pernambuco,
@@ -95,6 +99,7 @@ class Address extends Equatable {
       "city": city,
       "state": state.stateAbbreviation,
       "postal_code": postalCode,
+      "is_active": isActive,
       "client_id": clientId,
     };
   }
@@ -108,6 +113,7 @@ class Address extends Equatable {
       "city": city,
       "state": state.stateAbbreviation,
       "postal_code": postalCode,
+      "is_active": isActive ? 1 : 0,
       "client_id": clientId,
     };
   }

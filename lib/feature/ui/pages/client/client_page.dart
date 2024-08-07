@@ -201,6 +201,11 @@ class _ClientPageState extends State<ClientPage> {
                       position: index + 1,
                       onDelete: () {
                         if (!isGreater) return;
+                        final id = controllers[index].id;
+                        if (widget.client != null && id != null) {
+                          _bloc.add(DeleteAddressByIdEvent(
+                              client: widget.client!, addressId: id));
+                        }
                         _addressController.removeByIndex(index);
                       },
                       onStateChange: (state) {
@@ -254,6 +259,11 @@ class _ClientPageState extends State<ClientPage> {
                       showDelete: isGreater,
                       onDelete: () {
                         if (!isGreater) return;
+                        final id = controllers[index].id;
+                        if (widget.client != null && id != null) {
+                          _bloc.add(DeletePhoneByIdEvent(
+                              client: widget.client!, phoneId: id));
+                        }
                         _phonesController.removeByIndex(index);
                       },
                       onChanged: (PhoneType phone) {

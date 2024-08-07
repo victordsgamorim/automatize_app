@@ -44,21 +44,24 @@ final class DeleteByIdEvent extends ClientEvent {
 }
 
 final class DeleteAddressByIdEvent extends ClientEvent {
-  final String id;
+  final Client client;
+  final String addressId;
 
-  const DeleteAddressByIdEvent(this.id);
+  const DeleteAddressByIdEvent(
+      {required this.client, required this.addressId});
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [client, addressId];
 }
 
 final class DeletePhoneByIdEvent extends ClientEvent {
-  final String id;
+  final Client client;
+  final String phoneId;
 
-  const DeletePhoneByIdEvent(this.id);
+  const DeletePhoneByIdEvent( {required this.client, required this.phoneId});
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [client, phoneId];
 }
 
 final class GetByIdEvent extends ClientEvent {

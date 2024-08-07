@@ -24,6 +24,5 @@ void main() async {
   // }
 
   await setUp();
-
   runApp(const MyApp());
 }

@@ -15,7 +15,7 @@ class ClientDao {
   static const String _clientId = "id";
   static const String _name = "name";
   static const String _clientType = "type";
-  static const String _isActive = "is_active";
+  static const String _isClientActive = "is_active";
   static const String _updatedAt = "updated_at";
 
   static const String _addressId = 'id';
@@ -25,10 +25,12 @@ class ClientDao {
   static const String _postalCode = 'postal_code';
   static const String _city = 'city';
   static const String _state = 'state';
+  static const String _isAddressActive = "is_active";
 
   static const String _phoneId = "id";
   static const String _phoneNumber = "number";
   static const String _phoneType = "type";
+  static const String _isPhoneActive = "is_active";
 
   static const String _foreignClientId = "client_id";
 
@@ -37,7 +39,7 @@ class ClientDao {
             $_clientId TEXT PRIMARY KEY,
             $_name TEXT NOT NULL,
             $_clientType TEXT NOT NULL,
-            $_isActive INTEGER NOT NULL,
+            $_isClientActive INTEGER NOT NULL,
             $_updatedAt TEXT NOT NULL
           )
         ''';
@@ -51,6 +53,7 @@ class ClientDao {
     $_postalCode TEXT NOT NULL,
     $_city TEXT NOT NULL,
     $_state TEXT NOT NULL CHECK(LENGTH(state) = 2),
+    $_isAddressActive INTEGER NOT NULL,
     $_foreignClientId TEXT NOT NULL,
     FOREIGN KEY ($_foreignClientId) REFERENCES $_clientTableName($_clientId) ON DELETE CASCADE
   )
@@ -61,6 +64,7 @@ class ClientDao {
       $_phoneId TEXT PRIMARY KEY,
       $_phoneNumber TEXT NOT NULL,
       $_phoneType TEXT NOT NULL CHECK(LENGTH(type) = 1),
+      $_isPhoneActive INTEGER NOT NULL,
       $_foreignClientId TEXT NOT NULL,
       FOREIGN KEY ($_foreignClientId) REFERENCES $_clientTableName($_clientId) ON DELETE CASCADE
     )
@@ -70,16 +74,20 @@ class ClientDao {
     final searchText = "%$search%";
     const String addressId = "address_id";
     const String phoneId = "phone_id";
-
     final dbClients = await _db.rawQuery('''
       SELECT 
-        c.$_clientId as id,  c.$_name, c.$_clientType as client_type, c.$_isActive, c.$_updatedAt, 
-        a.$_addressId as $addressId, a.$_street, a.$_addressNumber as address_number, a.$_area, a.$_postalCode, a.$_city, a.$_state, a.$_foreignClientId as address_client,
-        p.$_phoneId as $phoneId, p.$_phoneNumber as phone_number, p.$_phoneType as phone_type, p.$_foreignClientId as phone_client
+        c.$_clientId AS id,  c.$_name, c.$_clientType AS client_type, c.$_isClientActive AS client_active, c.$_updatedAt, 
+        a.$_addressId AS $addressId, a.$_street, a.$_addressNumber AS address_number, a.$_area, a.$_postalCode, a.$_city, a.$_state, a.$_isAddressActive AS address_active, a.$_foreignClientId AS address_client,
+        p.$_phoneId AS $phoneId, p.$_phoneNumber AS phone_number, p.$_phoneType AS phone_type, p.$_isPhoneActive AS phone_active, p.$_foreignClientId AS phone_client
       FROM $_clientTableName c
-      INNER JOIN $_addressTableName a ON c.id = a.$_foreignClientId
-      INNER JOIN $_phonesTableName p ON c.id = p.$_foreignClientId
-      WHERE c.$_isActive = 1 AND (c.$_name LIKE ? OR a.$_street LIKE ? OR a.$_city LIKE ? OR a.$_area LIKE ?)  
+      LEFT JOIN (
+        SELECT * FROM $_addressTableName WHERE $_isAddressActive = 1
+      ) a ON c.id = a.$_foreignClientId
+      LEFT JOIN (
+        SELECT * FROM $_phonesTableName WHERE $_isPhoneActive = 1
+      ) p ON c.id = p.$_foreignClientId
+    
+      WHERE c.$_isClientActive = 1 AND (c.$_name LIKE ? OR a.$_street LIKE ? OR a.$_city LIKE ? OR a.$_area LIKE ?)  
       ORDER BY c.$_name     
     ''', [searchText, searchText, searchText, searchText]);
 
@@ -94,6 +102,7 @@ class ClientDao {
         Client client = Client.fromSQL(c);
         final address = Address.fromSQL(c);
         final phone = Phone.fromSQL(c);
+
         addressesMap[address.id!] = address;
         phonesMap[phone.id!] = phone;
 
@@ -110,11 +119,15 @@ class ClientDao {
         List<Address>? addresses;
         List<Phone>? phones;
         if (!addressesMap.containsKey(aId)) {
-          addresses = List.from(client.addresses)..add(Address.fromSQL(c));
+          final address = Address.fromSQL(c);
+          addresses = List.from(client.addresses)..add(address);
+          addressesMap[address.id!] = address;
         }
 
         if (!phonesMap.containsKey(pId)) {
+          final phone = Phone.fromSQL(c);
           phones = List.from(client.phones)..add(Phone.fromSQL(c));
+          phonesMap[phone.id!] = phone;
         }
 
         client = client.copyWith(addresses: addresses, phones: phones);
@@ -133,22 +146,16 @@ class ClientDao {
     );
 
     final batch = _db.batch();
-    for (Address address in client.addresses) {
-      batch.insert(
-        _addressTableName,
-        address.toSQL(client.id),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-
-    for (Phone phone in client.phones) {
-      batch.insert(
-        _phonesTableName,
-        phone.toSQL(client.id),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-
+    _insertAddressBatch(
+      batch: batch,
+      clientId: client.id,
+      addresses: client.addresses,
+    );
+    _insertPhoneBatch(
+      batch: batch,
+      clientId: client.id,
+      phones: client.phones,
+    );
     await batch.commit();
   }
 
@@ -161,27 +168,49 @@ class ClientDao {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
 
-      for (Address address in client.addresses) {
-        batch.insert(
-          _addressTableName,
-          address.toSQL(client.id),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-      }
-
-      for (Phone phone in client.phones) {
-        batch.insert(
-          _phonesTableName,
-          phone.toSQL(client.id),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-      }
+      _insertAddressBatch(
+        batch: batch,
+        clientId: client.id,
+        addresses: client.addresses,
+      );
+      _insertPhoneBatch(
+        batch: batch,
+        clientId: client.id,
+        phones: client.phones,
+      );
     }
     await batch.commit();
   }
 
+  void _insertAddressBatch(
+      {required Batch batch,
+      required String clientId,
+      required List<Address> addresses}) {
+    for (Address address in addresses) {
+      batch.insert(
+        _addressTableName,
+        address.toSQL(clientId),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
+  void _insertPhoneBatch({
+    required Batch batch,
+    required String clientId,
+    required List<Phone> phones,
+  }) {
+    for (Phone phone in phones) {
+      batch.insert(
+        _phonesTableName,
+        phone.toSQL(clientId),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
   Future<void> updateToDelete(String id) async {
-    _db.update(_clientTableName, {_isActive: 0},
+    _db.update(_clientTableName, {_isClientActive: 0},
         where: '$_clientId = ?', whereArgs: [id]);
   }
 }

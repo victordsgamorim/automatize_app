@@ -9,7 +9,6 @@ import 'package:automatize_app/feature/data/datasource/remote/client_remote_data
 import 'package:automatize_app/feature/model/client.dart';
 import 'package:automatize_app/feature/model/no_param.dart';
 import 'package:dartz/dartz.dart';
-import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class ClientRepository {
@@ -24,6 +23,16 @@ abstract interface class ClientRepository {
   Future<Either<Failure, Client>> update(Client client);
 
   Future<Either<Failure, String>> deleteById(String id);
+
+  Future<Either<Failure, Client>> deleteAddressById({
+    required String clientId,
+    required String addressId,
+  });
+
+  Future<Either<Failure, Client>> deletePhoneById({
+    required String clientId,
+    required String phoneId,
+  });
 }
 
 final class ClientRepositoryImpl implements ClientRepository {
@@ -71,7 +80,7 @@ final class ClientRepositoryImpl implements ClientRepository {
       }
     } on TimeoutException {
       return const Left(ServerFailure(message: serverConnection));
-    } on PostgrestException catch(e){
+    } on PostgrestException catch (e) {
       return const Left(ServerFailure(message: notFound));
     }
 
@@ -107,7 +116,7 @@ final class ClientRepositoryImpl implements ClientRepository {
         await _clientDao.insert(remoteData);
         return Right(remoteData);
       }
-    } on TimeoutException{
+    } on TimeoutException {
       return const Left(ServerFailure(message: serverConnection));
     } on PostgrestException catch (e) {
       return Left(ServerFailure(
@@ -126,5 +135,49 @@ final class ClientRepositoryImpl implements ClientRepository {
     }
 
     return const Left(InternetFailure(message: noConnection));
+  }
+
+  @override
+  Future<Either<Failure, Client>> deleteAddressById({
+    required String clientId,
+    required String addressId,
+  }) async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final clientRemote = await _clientRemoteDatasource.deleteAddressById(
+          clientId: clientId,
+          addressId: addressId,
+        );
+        await _clientDao.insert(clientRemote);
+        return Right(clientRemote);
+      }
+
+      return const Left(InternetFailure(message: noConnection));
+    } on PostgrestException catch (e) {
+      return Left(ServerFailure(
+          message: e.code == nullValueCode.toString() ? nullValue : notFound));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Client>> deletePhoneById({
+    required String clientId,
+    required String phoneId,
+  }) async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final clientRemote = await _clientRemoteDatasource.deletePhoneById(
+          clientId: clientId,
+          phoneId: phoneId,
+        );
+        await _clientDao.insert(clientRemote);
+        return Right(clientRemote);
+      }
+
+      return const Left(InternetFailure(message: noConnection));
+    } on PostgrestException catch (e) {
+      return Left(ServerFailure(
+          message: e.code == nullValueCode.toString() ? nullValue : notFound));
+    }
   }
 }

@@ -22,11 +22,13 @@ class Phone extends Equatable {
   final String? id;
   final String number;
   final PhoneType type;
+  final bool isActive;
 
   const Phone({
     this.id,
     required this.number,
     required this.type,
+    this.isActive = true,
   });
 
   factory Phone.fromMap(Map<String, dynamic> map) {
@@ -36,6 +38,7 @@ class Phone extends Equatable {
       type: PhoneType.values
               .firstWhereOrNull((type) => type.type == map['type']) ??
           PhoneType.mobile,
+      isActive: map['is_active'],
     );
   }
 
@@ -43,6 +46,7 @@ class Phone extends Equatable {
     return Phone(
       id: map['phone_id'],
       number: map['phone_number'],
+      isActive: map['phone_active'] == 1,
       type: PhoneType.values
               .firstWhereOrNull((type) => type.type == map['phone_type']) ??
           PhoneType.mobile,
@@ -54,6 +58,7 @@ class Phone extends Equatable {
       "id": id,
       "number": number,
       "type": type.type,
+      "is_active": isActive,
       "client_id": clientId
     };
   }
@@ -64,9 +69,10 @@ class Phone extends Equatable {
       "number": number,
       "type": type.type,
       "client_id": clientId,
+      "is_active": isActive ? 1 : 0,
     };
   }
 
   @override
-  List<Object?> get props => [id, number, type];
+  List<Object?> get props => [id, number, type, isActive];
 }
